@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from backend.routes import blueprints
+from routes import blueprints
 import os
 import dotenv
 
