@@ -1,4 +1,4 @@
-from routes import issuer_bp
+from . import issuer_bp
 from flask import request, jsonify
 from eth_account.messages import encode_defunct
 from eth_account import Account

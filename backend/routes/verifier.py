@@ -1,4 +1,4 @@
-from routes import verifier_bp
+from . import verifier_bp
 from flask import request, jsonify
 from web3 import Web3
 from config import credential_verification

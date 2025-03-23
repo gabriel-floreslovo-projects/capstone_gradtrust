@@ -1,4 +1,4 @@
-from routes import admin_bp
+from . import admin_bp
 from flask import jsonify
 from web3 import Web3
 from classes.issue_verification import IssuerVerification
