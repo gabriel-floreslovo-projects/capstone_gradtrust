@@ -1,8 +1,8 @@
 from . import admin_bp
 from flask import jsonify
 from web3 import Web3
-from classes.issue_verification import IssuerVerification
-from config import w3, issuer_registry, PRIVATE_KEY
+from ..classes.issue_verification import IssuerVerification
+from ..config import w3, issuer_registry, PRIVATE_KEY
 import os
 import json
 
