@@ -1,7 +1,7 @@
-from . import verifier_bp
+from backend.routes import verifier_bp
 from flask import request, jsonify
 from web3 import Web3
-from config import credential_verification
+from backend.config import credential_verification
 
 @verifier_bp.route('/verify-credential', methods=['GET'])
 def verify_credential():

@@ -1,11 +1,11 @@
-from . import issuer_bp
+from backend.routes import issuer_bp
 from flask import request, jsonify
 from eth_account.messages import encode_defunct
 from eth_account import Account
 from web3 import Web3
 import psycopg2
-from classes.issue_verification import IssuerVerification
-from config import CONNECTION_STRING, w3, credential_verification
+from backend.classes.issue_verification import IssuerVerification
+from backend.config import CONNECTION_STRING, w3, credential_verification
 
 @issuer_bp.route('/test', methods=['GET'])
 def test():

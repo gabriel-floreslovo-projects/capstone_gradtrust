@@ -1,8 +1,8 @@
-from . import admin_bp
+from backend.routes import admin_bp
 from flask import jsonify
 from web3 import Web3
-from ..classes.issue_verification import IssuerVerification
-from ..config import w3, issuer_registry, PRIVATE_KEY
+from backend.classes.issue_verification import IssuerVerification
+from backend.config import w3, issuer_registry, PRIVATE_KEY
 import os
 import json
 

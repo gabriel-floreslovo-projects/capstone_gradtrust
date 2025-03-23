@@ -1,4 +1,4 @@
-from . import common_bp
+from backend.routes import common_bp
 from flask import request, jsonify
 from web3 import Web3
 from config import credential_verification
