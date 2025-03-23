@@ -57,3 +57,4 @@ web3
 websockets
 Werkzeug
 yarl
+gunicorn
