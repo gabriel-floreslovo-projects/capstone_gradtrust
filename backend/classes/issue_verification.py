@@ -40,7 +40,16 @@ class IssuerVerification:
         for leaf in leaves:
             print(f'leaf: {leaf}')
             print(f'leaf type: {type(leaf)}')
-        return MerkleTree(leaves)
+
+        try:
+            tree = MerkleTree(leaves)
+        except:
+            #the leaves list must be a power of 2, so if it is not, we append the last leaf to the list
+            #append the last leaf to the leaves list
+            leaves.append(leaves[-1])
+            tree = MerkleTree(leaves.hex())
+        finally:
+            return tree
 
     def get_merkle_root(self):
         """
