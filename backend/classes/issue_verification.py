@@ -42,7 +42,7 @@ class IssuerVerification:
             print(f'leaf type: {type(leaf)}')
 
         try:
-            tree = MerkleTree(leaves)
+            tree = MerkleTree(leaves.hex())
         except:
             #the leaves list must be a power of 2, so if it is not, we append the last leaf to the list
             #append the last leaf to the leaves list
