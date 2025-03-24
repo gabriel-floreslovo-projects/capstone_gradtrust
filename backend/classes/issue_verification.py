@@ -65,6 +65,7 @@ class IssuerVerification:
         # getting the error "list object has no attribute hex"
         print(f'root: {self.tree.root}')
         print(f'type of root: {type(self.tree.root)}')
+        print(f'hex of root: {self.tree.root[0].encode('utf-8').hex()}')
         return self.tree.root[0].encode('utf-8').hex()
 
     def get_issuer_proof(self, issuer_address, issuer_name):
