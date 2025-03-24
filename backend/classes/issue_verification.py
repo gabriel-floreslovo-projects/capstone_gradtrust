@@ -36,6 +36,9 @@ class IssuerVerification:
             leaves.append(signature)
             self.issuer_map[(address, name)] = signature
 
+
+        for leaf in leaves:
+            print(f'leaf: {leaf}')
         return MerkleTree(leaves)
 
     def get_merkle_root(self):
