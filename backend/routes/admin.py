@@ -12,6 +12,7 @@ def update_merkle_root():
     try:
         verifier = IssuerVerification()
         try:
+            #causing the error
             new_root = verifier.get_merkle_root()
             root_bytes = Web3.to_bytes(hexstr=new_root)
 

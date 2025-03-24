@@ -46,12 +46,12 @@ class IssuerVerification:
         tree = MerkleTree(default_leaves)
 
         try:
-            tree = MerkleTree(leaves.hex())
+            tree = MerkleTree(leaves)
         except:
             #the leaves list must be a power of 2, so if it is not, we append the last leaf to the list
             #append the last leaf to the leaves list
             leaves.append(leaves[-1])
-            tree = MerkleTree(leaves.hex())
+            tree = MerkleTree(leaves)
 
         return tree
 
@@ -62,6 +62,9 @@ class IssuerVerification:
             str: Hex string of Merkle root
         """
         # print(type(self.tree.root.hex()))
+        # getting the error "list object has no attribute hex"
+        print(f'root: {self.tree.root}')
+        print(f'type of root: {type(self.tree.root)}')
         return self.tree.root.hex()
 
     def get_issuer_proof(self, issuer_address, issuer_name):
