@@ -41,6 +41,8 @@ class IssuerVerification:
             print(f'leaf: {leaf}')
             print(f'leaf type: {type(leaf)}')
 
+        tree = MerkleTree()
+
         try:
             tree = MerkleTree(leaves.hex())
         except:
@@ -48,8 +50,8 @@ class IssuerVerification:
             #append the last leaf to the leaves list
             leaves.append(leaves[-1])
             tree = MerkleTree(leaves.hex())
-        finally:
-            return tree
+
+        return tree
 
     def get_merkle_root(self):
         """
