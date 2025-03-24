@@ -41,7 +41,9 @@ class IssuerVerification:
             print(f'leaf: {leaf}')
             print(f'leaf type: {type(leaf)}')
 
-        tree = MerkleTree()
+        default_leaves = ['A']
+
+        tree = MerkleTree(default_leaves)
 
         try:
             tree = MerkleTree(leaves.hex())
