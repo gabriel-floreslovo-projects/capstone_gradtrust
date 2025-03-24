@@ -39,6 +39,7 @@ class IssuerVerification:
 
         for leaf in leaves:
             print(f'leaf: {leaf}')
+            print(f'leaf type: {type(leaf)}')
         return MerkleTree(leaves)
 
     def get_merkle_root(self):
