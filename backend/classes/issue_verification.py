@@ -91,6 +91,7 @@ class IssuerVerification:
 
         # Get proof from tree
         proof_data = self.tree.proof(signature)
+        print(proof_data)
         
         # Extract proof nodes and their positions
         proof_nodes = []
