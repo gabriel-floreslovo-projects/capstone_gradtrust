@@ -2,8 +2,8 @@ import os
 from web3 import Web3
 import json
 import dotenv
-from abis.issuer_registry import ABI as ISSUER_REGISTRY_ABI
-from abis.credential_verification import ABI as CREDENTIAL_VERIFICATION_ABI
+from backend.abis.issuer_registry import ABI as ISSUER_REGISTRY_ABI
+from backend.abis.credential_verification import ABI as CREDENTIAL_VERIFICATION_ABI
 
 dotenv.load_dotenv()
 
