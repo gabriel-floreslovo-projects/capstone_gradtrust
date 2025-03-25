@@ -14,7 +14,7 @@ def update_merkle_root():
         try:
             #causing the error
             new_root = verifier.get_merkle_root()
-            root_bytes = Web3.to_bytes(hexstr=new_root)
+            root_bytes = Web3.to_bytes(hexstr=new_root).rjust(32, b'\0')
             print(f'root_bytes: {root_bytes}')
             print(f'type of root_bytes: {type(root_bytes)}')
 
