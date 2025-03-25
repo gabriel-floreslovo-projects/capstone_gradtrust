@@ -14,7 +14,8 @@ def update_merkle_root():
         try:
             #causing the error
             new_root = verifier.get_merkle_root()
-            root_bytes = Web3.to_bytes(hexstr=new_root)
+            # Convert hex string to bytes32
+            root_bytes = bytes.fromhex(new_root)
             if len(root_bytes) != 32:
                 print(len(root_bytes))
                 raise ValueError("Merkle root must be exactly 32 bytes")
