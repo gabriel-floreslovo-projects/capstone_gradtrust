@@ -72,10 +72,10 @@ def issue_credential():
         verifier = IssuerVerification()
         try:
             proof_data = verifier.get_issuer_proof(issuer_address, issuer_name)
+            print(proof_data)
 
             # Prepare contract call data
-            # Extract the hexadecimal value from each Node object in the proof
-            proof = [bytes.fromhex(node.value) for node in proof_data['proof']]
+            proof = [bytes.fromhex(p) for p in proof_data['proof']]
             leaf_hash = Web3.keccak(text=proof_data['leaf'])
 
             # Convert credential hash to bytes32
