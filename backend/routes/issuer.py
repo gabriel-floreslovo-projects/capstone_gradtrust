@@ -74,7 +74,8 @@ def issue_credential():
             proof_data = verifier.get_issuer_proof(issuer_address, issuer_name)
 
             # Prepare contract call data
-            proof = [bytes.fromhex(p) for p in proof_data['proof']]
+            # Extract the hexadecimal value from each Node object in the proof
+            proof = [bytes.fromhex(node.value) for node in proof_data['proof']]
             leaf_hash = Web3.keccak(text=proof_data['leaf'])
 
             # Convert credential hash to bytes32
@@ -108,7 +109,7 @@ def issue_credential():
 
             # Sign and send transaction
             signed_tx = w3.eth.account.sign_transaction(tx, PRIVATE_KEY)
-            tx_hash = w3.eth.send_raw_transaction(signed_tx.raw_transaction)
+            tx_hash = w3.eth.send_raw_transaction(signed_tx.rawTransaction)
 
             # Wait for transaction receipt
             receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
