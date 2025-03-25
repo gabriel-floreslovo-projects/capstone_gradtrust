@@ -74,15 +74,18 @@ def issue_credential():
             proof_data = verifier.get_issuer_proof(issuer_address, issuer_name)
             print(proof_data)
 
-            for p in proof_data['proof']:
-                print(f"Proof element: {p}, Length: {len(p)}, Is Hex: {all(c in '0123456789abcdefABCDEF' for c in p)}")
-
             # Prepare contract call data
-            proof = [bytes.fromhex(p.strip()) for p in proof_data['proof']]
+            proof = []
+            for p in proof_data['proof']:
+                sanitized_p = p.strip()  # Remove leading/trailing whitespace
+                if not all(c in '0123456789abcdefABCDEF' for c in sanitized_p):
+                    raise ValueError(f"Invalid hex string in proof: {sanitized_p}")
+                proof.append(bytes.fromhex(sanitized_p))
+
             leaf_hash = Web3.keccak(text=proof_data['leaf'])
 
             # Convert credential hash to bytes32
-            credential_bytes = bytes.fromhex(credential_hash)
+            credential_bytes = bytes.fromhex(credential_hash.strip())
             if len(credential_bytes) != 32:
                 raise ValueError("Credential hash must be exactly 32 bytes")
 
