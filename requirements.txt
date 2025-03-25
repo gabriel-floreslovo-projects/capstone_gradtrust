@@ -31,7 +31,7 @@ idna
 itsdangerous
 Jinja2
 MarkupSafe
-merkly
+merkly>=1.0.2
 multidict
 parsimonious
 propcache
