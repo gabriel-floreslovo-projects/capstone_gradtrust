@@ -61,7 +61,7 @@ class IssuerVerification:
         Returns:
             str: Hex string of Merkle root
         """
-        # print(type(self.tree.root.hex()))
+        print(type(self.tree.root.hex()))
         # getting the error "list object has no attribute hex"
         print(f'root: {self.tree.root}')
         print(f'type of root: {type(self.tree.root)}')
