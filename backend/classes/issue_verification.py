@@ -82,6 +82,7 @@ class IssuerVerification:
             raise ValueError(f"Issuer not found: {issuer_address} ({issuer_name})")
 
         # Get proof from tree
+        print(dir(self.tree))
         proof_data = self.tree.proof(signature)
         print(proof_data)
         
