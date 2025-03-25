@@ -1,4 +1,4 @@
-from merkly.mtree import MerkleTree
+from merkly.mtree import MerkleTree, is_power_2
 import psycopg2
 
 class IssuerVerification:
@@ -32,12 +32,18 @@ class IssuerVerification:
         self.issuer_map = {}
         leaves = []
 
-
         for address, name, signature in issuer_data:
             leaves.append(signature)
             self.issuer_map[(address, name)] = signature
 
-        # print(type(leaves))
+
+        for leaf in leaves:
+            print(f'leaf: {leaf}')
+            print(f'leaf type: {type(leaf)}')
+
+       # Pad to power of 2 if needed
+        while not is_power_2(len(leaves)):
+            leaves.append(leaves[-1])
 
         return MerkleTree(leaves)
 
@@ -47,9 +53,14 @@ class IssuerVerification:
         Returns:
             str: Hex string of Merkle root
         """
-        # print(type(self.tree.root))
-
-        return self.tree.root.hex()
+        print(type(self.tree.root.hex()))
+        # getting the error "list object has no attribute hex"
+        print(f'root: {self.tree.root}')
+        print(f'type of root: {type(self.tree.root)}')
+        root_hex = self.tree.root[0].encode('utf-8').hex()
+        print(f'hex of root: {root_hex}')
+        print(len(self.tree.root[0]))
+        return self.tree.root[0]
 
     def get_issuer_proof(self, issuer_address, issuer_name):
         """
@@ -71,7 +82,9 @@ class IssuerVerification:
             raise ValueError(f"Issuer not found: {issuer_address} ({issuer_name})")
 
         # Get proof from tree
+        print(dir(self.tree))
         proof_data = self.tree.proof(signature)
+        print(proof_data)
         
         # Extract proof nodes and their positions
         proof_nodes = []

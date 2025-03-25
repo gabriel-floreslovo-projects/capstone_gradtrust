@@ -1,8 +1,8 @@
-from routes import admin_bp
+from backend.routes import admin_bp
 from flask import jsonify
 from web3 import Web3
-from classes.issue_verification import IssuerVerification
-from config import w3, issuer_registry, PRIVATE_KEY
+from backend.classes.issue_verification import IssuerVerification
+from backend.config import w3, issuer_registry, PRIVATE_KEY
 import os
 import json
 
@@ -12,9 +12,18 @@ def update_merkle_root():
     try:
         verifier = IssuerVerification()
         try:
+            #causing the error
             new_root = verifier.get_merkle_root()
-            root_bytes = Web3.to_bytes(hexstr=new_root)
-            print(root_bytes)
+            # Convert hex string to bytes32
+            root_bytes = Web3.toBytes(hexstr=new_root)
+            #print root_bytes
+            print(f'root_bytes: {root_bytes}')
+            print(f'type of root_bytes: {type(root_bytes)}')
+            if len(root_bytes) != 32:
+                print(len(root_bytes))
+                raise ValueError("Merkle root must be exactly 32 bytes")
+            print(f'root_bytes: {root_bytes}')
+            print(f'type of root_bytes: {type(root_bytes)}')
 
             
            # Get account from private key
