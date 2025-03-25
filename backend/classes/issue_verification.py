@@ -67,6 +67,7 @@ class IssuerVerification:
         print(f'type of root: {type(self.tree.root)}')
         root_hex = self.tree.root[0].encode('utf-8').hex()
         print(f'hex of root: {root_hex}')
+        print(f'length of root: {len(self.tree.root[0].encode('utf-8').hex())}')
         return self.tree.root[0].encode('utf-8').hex()
 
     def get_issuer_proof(self, issuer_address, issuer_name):
