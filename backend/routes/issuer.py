@@ -82,7 +82,8 @@ def issue_credential():
                     raise ValueError(f"Invalid hex string in proof: {sanitized_p}")
                 proof.append(bytes.fromhex(sanitized_p))
 
-            leaf_hash = Web3.keccak(text=proof_data['leaf'])
+            # Remove the '0x' prefix from the leaf before hashing
+            leaf_hash = Web3.keccak(text=proof_data['leaf'][2:] if proof_data['leaf'].startswith('0x') else proof_data['leaf'])
 
             # Convert credential hash to bytes32
             credential_bytes = bytes.fromhex(credential_hash.strip())
