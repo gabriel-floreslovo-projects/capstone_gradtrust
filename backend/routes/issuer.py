@@ -72,7 +72,6 @@ def issue_credential():
         verifier = IssuerVerification()
         try:
             proof_data = verifier.get_issuer_proof(issuer_address, issuer_name)
-            print(proof_data)
 
             # Prepare contract call data
             proof = []
@@ -80,10 +79,12 @@ def issue_credential():
                 sanitized_p = p.strip()  # Remove leading/trailing whitespace
                 if not all(c in '0123456789abcdefABCDEF' for c in sanitized_p):
                     raise ValueError(f"Invalid hex string in proof: {sanitized_p}")
+                print(proof)
                 proof.append(bytes.fromhex(sanitized_p))
 
             # Remove the '0x' prefix from the leaf before hashing
-            leaf_hash = Web3.keccak(text=proof_data['leaf'][2:] if proof_data['leaf'].startswith('0x') else proof_data['leaf'])
+            sanitized_leaf = proof_data['leaf'][2:] if proof_data['leaf'].startswith('0x') else proof_data['leaf']
+            leaf_hash = Web3.keccak(hexstr=sanitized_leaf)
 
             # Convert credential hash to bytes32
             credential_bytes = bytes.fromhex(credential_hash.strip())
