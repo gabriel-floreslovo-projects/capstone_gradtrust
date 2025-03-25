@@ -79,7 +79,8 @@ def issue_credential():
             leaf_hash = Web3.keccak(text=proof_data['leaf'])
 
             # Convert credential hash to bytes32
-            credential_bytes = bytes.fromhex(credential_hash.strip())
+            print(credential_hash)
+            credential_bytes = Web3.to_bytes(hexstr=credential_hash)
             if len(credential_bytes) != 32:
                 raise ValueError("Credential hash must be exactly 32 bytes")
 
