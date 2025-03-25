@@ -1,4 +1,4 @@
-from merkly.mtree import MerkleTree
+from merkly.mtree import MerkleTree, is_power_2
 import psycopg2
 
 class IssuerVerification:
@@ -41,19 +41,11 @@ class IssuerVerification:
             print(f'leaf: {leaf}')
             print(f'leaf type: {type(leaf)}')
 
-        default_leaves = ['A']
-
-        tree = MerkleTree(default_leaves)
-
-        try:
-            tree = MerkleTree(leaves)
-        except:
-            #the leaves list must be a power of 2, so if it is not, we append the last leaf to the list
-            #append the last leaf to the leaves list
+       # Pad to power of 2 if needed
+        while not is_power_2(len(leaves)):
             leaves.append(leaves[-1])
-            tree = MerkleTree(leaves)
 
-        return tree
+        return MerkleTree(leaves)
 
     def get_merkle_root(self):
         """
