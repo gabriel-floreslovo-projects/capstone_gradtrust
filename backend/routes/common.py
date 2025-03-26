@@ -2,6 +2,10 @@ from routes import common_bp
 from flask import request, jsonify
 from web3 import Web3
 from config import credential_verification
+import os
+import bcrypt
+import psycopg2
+
 
 @common_bp.route('/pull-credentials', methods=['GET'])
 def pull_credentials():
@@ -34,3 +38,34 @@ def pull_credentials():
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500 
+
+@common_bp.route('/login', methods=['POST'])
+def login():
+    """Have user log in and access correct page based on their role"""
+    try:
+        username = request.form.get('username')
+        password = request.form.get('password')
+        pepper = os.getenv('PEPPER')
+        # Connect to the db
+        conn = psycopg2.connect(
+            'postgresql://postgres:L8RTsfQAJ3wuh7y4@exactly-assured-sawfly.data-1.use1.tembo.io:5432/postgres'
+        )   
+        cursor = conn.cursor()
+        # Pull the user's passhash and salt to verify password input
+        cursor.execute(f'SELECT passhash, salt FROM accounts WHERE username = {username};')
+        userInfo = cursor.fetchall()[0]
+        cursor.close()
+        passhash = userInfo['passhash']
+
+        if not userInfo:
+            raise ValueError("Nothing was found in the database")
+        
+        if (bcrypt.checkpw(password=password.encode('utf-8'), hashed_password=bytes.fromhex(passhash))):
+            return jsonify({"message":"you're logged in"}), 500
+        else:
+            return jsonify({"message":"failed login"}), 500
+            
+        
+    except (Exception, psycopg2.DatabaseError) as e:
+        print(f"There was an error during login: {e}")
+        return jsonify({'error': str(e)}), 500
