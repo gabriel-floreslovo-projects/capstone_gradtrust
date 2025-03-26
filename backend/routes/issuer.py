@@ -115,11 +115,16 @@ def issue_credential():
             # Wait for transaction receipt
             receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
 
-            return jsonify({
-                'success': True,
-                'transactionHash': receipt.transactionHash.hex(),
-                'credentialHash': credential_hash
-            })
+            # Check if the transaction was successful
+            if receipt.status == 1:  # 1 means success
+                return jsonify({
+                    'success': True,
+                    'transactionHash': receipt.transactionHash.hex(),
+                    'credentialHash': credential_hash
+                })
+            else:
+                return jsonify({'error': 'Transaction failed on the blockchain'}), 500
+
         finally:
             verifier.close()
 
