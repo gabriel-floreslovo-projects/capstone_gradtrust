@@ -23,11 +23,11 @@ def register_issuer():
         return jsonify({'error': 'Missing required fields'}), 400
 
     try:
-        # Create and sign message
-        message = f"{issuer_address},{issuer_name}"
-        message_hash = encode_defunct(text=message)
-        signed_message = Account.sign_message(message_hash, private_key=private_key)
-        signature = '0x' + signed_message.signature.hex()
+        # # Create and sign message
+        # message = f"{issuer_address},{issuer_name}"
+        # message_hash = encode_defunct(text=message)
+        # signed_message = Account.sign_message(message_hash, private_key=private_key)
+        # signature = '0x' + signed_message.signature.hex()
 
         # Store in database
         with psycopg2.connect(CONNECTION_STRING) as conn:
