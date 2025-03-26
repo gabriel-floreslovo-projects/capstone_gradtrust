@@ -52,18 +52,19 @@ def login():
         )   
         cursor = conn.cursor()
         # Pull the user's passhash and salt to verify password input
-        cursor.execute(f'SELECT passhash, salt FROM accounts WHERE username = {username};')
+        cursor.execute(f'SELECT passhash, role FROM accounts WHERE username = {username};')
         userInfo = cursor.fetchall()[0]
         cursor.close()
         passhash = userInfo['passhash']
+        userRole = userInfo['role']
 
         if not userInfo:
             raise ValueError("Nothing was found in the database")
         
         if (bcrypt.checkpw(password=password.encode('utf-8'), hashed_password=bytes.fromhex(passhash))):
-            return jsonify({"message":"you're logged in"}), 500
+            return jsonify({"message":f"you're logged in. role - {userRole}"}), 500
         else:
-            return jsonify({"message":"failed login"}), 500
+            return jsonify({"message":"failed login."}), 500
             
         
     except (Exception, psycopg2.DatabaseError) as e:
