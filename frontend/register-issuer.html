@@ -134,6 +134,12 @@
         document.getElementById('connectWallet').addEventListener('click', connectWallet);
         document.getElementById('registerForm').addEventListener('submit', registerIssuer);
 
+        // Reset connected address on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('connectedAddress').textContent = 'Not connected';
+            document.getElementById('registerButton').disabled = true; // Disable the register button
+        });
+
         // Check if already connected
         if (typeof window.ethereum !== 'undefined') {
             ethereum.request({ method: 'eth_accounts' })
