@@ -83,6 +83,11 @@
                 return;
             }
 
+            if (!web3) {
+                showStatus('Web3 is not initialized. Please connect your wallet.', 'danger');
+                return;
+            }
+
             try {
                 const message = `${connectedAccount},${issuerName}`;
                 console.log('Signing message:', message);  // Debug log
