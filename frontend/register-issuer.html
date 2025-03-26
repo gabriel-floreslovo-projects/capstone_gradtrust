@@ -91,6 +91,14 @@
             try {
                 const message = `${connectedAccount},${issuerName}`;
                 console.log('Signing message:', message);  // Debug log
+
+                // Check if connectedAccount is defined
+                if (!connectedAccount) {
+                    showStatus('No connected account found. Please connect your wallet.', 'danger');
+                    return;
+                }
+
+                // Attempt to sign the message
                 const signature = await web3.eth.personal.sign(message, connectedAccount);
                 console.log('Signature:', signature);  // Debug log
 
