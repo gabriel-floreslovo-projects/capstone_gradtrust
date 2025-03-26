@@ -36,6 +36,10 @@ def create_app():
     def view_credentials():
         return render_template("view-credentials.html")
 
+    @app.route("/register-issuer")
+    def register_issuer():
+        return render_template("register-issuer.html")
+
     return app
 
 if __name__ == "__main__":
