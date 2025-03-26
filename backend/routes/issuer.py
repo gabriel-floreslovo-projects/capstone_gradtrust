@@ -17,9 +17,9 @@ def register_issuer():
     data = request.json
     issuer_address = data.get('address')
     issuer_name = data.get('name')
-    private_key = data.get('private_key')
+    signature = data.get('signature')
 
-    if not all([issuer_address, issuer_name, private_key]):
+    if not all([issuer_address, issuer_name, signature]):
         return jsonify({'error': 'Missing required fields'}), 400
 
     try:
