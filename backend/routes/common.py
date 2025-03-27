@@ -60,8 +60,8 @@ def login():
             raise ValueError("Nothing was found in the database")
         
         print(userInfo)
-        passhash = userInfo[3] # Get the passhash
-        userRole = userInfo[4] # Get the role
+        passhash = userInfo[0] # Get the passhash
+        userRole = userInfo[1] # Get the role
         
         if (bcrypt.checkpw(password=password.encode('utf-8'), hashed_password=bytes.fromhex(passhash))):
             return jsonify({"message":f"you're logged in. role - {userRole}"}), 500
