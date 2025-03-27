@@ -193,8 +193,20 @@
                     return;
                 }
 
-                const message = `Update Merkle Root`;
+                // First, get the new root that needs to be signed
+                const rootResponse = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/admin/get-new-root');
+                const rootData = await rootResponse.json();
+
+                if (!rootData.success) {
+                    throw new Error(rootData.error || 'Failed to get new root');
+                }
+
+                // Construct the same message as backend
+                const message = `Update Merkle Root: ${rootData.merkleRoot}`;
+                console.log('Signing message:', message); // Debug log
+
                 const signature = await web3.eth.personal.sign(message, connectedAccount);
+                console.log('Signature:', signature); // Debug log
 
                 const response = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/admin/multi-sig/update-merkle-root', {
                     method: 'POST',
@@ -203,7 +215,8 @@
                     },
                     body: JSON.stringify({
                         adminAddress: connectedAccount,
-                        signature: signature
+                        signature: signature,
+                        merkleRoot: rootData.merkleRoot // Send the root back to verify
                     }),
                 });
 
@@ -225,6 +238,7 @@
                     showResult('Update failed: ' + result.error, 'error');
                 }
             } catch (error) {
+                console.error('Error:', error); // Debug log
                 showResult('Error: ' + error.message, 'error');
             } finally {
                 button.disabled = false;

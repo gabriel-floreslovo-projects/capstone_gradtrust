@@ -14,6 +14,23 @@ ADMIN_ADDRESSES = [
     "0x031A433BcB6c45Fa1afa9E33D9Ad60838b0970F7".lower()   # Second admin
 ]
 
+@admin_bp.route('/get-new-root', methods=['GET'])
+def get_new_root():
+    """Get the new Merkle root that needs to be signed"""
+    try:
+        verifier = IssuerVerification()
+        try:
+            new_root = verifier.get_merkle_root()
+            return jsonify({
+                'success': True,
+                'merkleRoot': new_root
+            })
+        finally:
+            verifier.close()
+    except Exception as e:
+        print(f"Error in get_new_root: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 @admin_bp.route('/multi-sig/update-merkle-root', methods=['POST'])
 def update_merkle_root_multi():
     """Update the Merkle root with multi-signature verification"""
@@ -21,13 +38,22 @@ def update_merkle_root_multi():
         data = request.json
         admin_address = data.get('adminAddress')
         signature = data.get('signature')
+        merkle_root = data.get('merkleRoot')  # Get the root from the request
 
-        if not all([admin_address, signature]):
+        if not all([admin_address, signature, merkle_root]):
             return jsonify({'error': 'Missing required fields'}), 400
 
         # Verify admin address
         if admin_address.lower() not in ADMIN_ADDRESSES:
             return jsonify({'error': 'Unauthorized admin address'}), 403
+
+        # Verify signature with the same message format
+        message = f"Update Merkle Root: {merkle_root}"
+        message_hash = encode_defunct(text=message)
+        recovered_address = Account.recover_message(message_hash, signature=signature)
+
+        if recovered_address.lower() != admin_address.lower():
+            return jsonify({'error': 'Invalid signature'}), 400
 
         verifier = IssuerVerification()
         try:
@@ -36,14 +62,6 @@ def update_merkle_root_multi():
 
             if len(root_bytes) != 32:
                 raise ValueError("Merkle root must be exactly 32 bytes")
-
-            # Verify signature
-            message = f"Update Merkle Root: {new_root}"
-            message_hash = encode_defunct(text=message)
-            recovered_address = Account.recover_message(message_hash, signature=signature)
-
-            if recovered_address.lower() != admin_address.lower():
-                return jsonify({'error': 'Invalid signature'}), 400
 
             # Check if this is the first or second signature
             if new_root not in pending_root_updates:
