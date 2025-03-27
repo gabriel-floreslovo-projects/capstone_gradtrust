@@ -113,13 +113,17 @@ def update_merkle_root_multi():
 @admin_bp.route('/multi-sig/pending-updates', methods=['GET'])
 def get_pending_updates():
     """Get list of pending Merkle root updates"""
-    return jsonify({
-        'success': True,
-        'pending': [
-            {
-                'merkleRoot': root,
-                'firstAdmin': data['first_admin']
-            }
-            for root, data in pending_root_updates.items()
-        ]
-    }) 
+    try:
+        return jsonify({
+            'success': True,
+            'pending': [
+                {
+                    'merkleRoot': root,
+                    'firstAdmin': data['first_admin']
+                }
+                for root, data in pending_root_updates.items()
+            ]
+        })
+    except Exception as e:
+        print(f"Error in get_pending_updates: {str(e)}")
+        return jsonify({'error': str(e)}), 500
