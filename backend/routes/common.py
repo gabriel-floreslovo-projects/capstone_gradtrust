@@ -55,8 +55,8 @@ def login():
         cursor.execute(f"SELECT passhash, role FROM accounts WHERE username = '{username}';")
         userInfo = cursor.fetchall()[0]
         cursor.close()
-        passhash = userInfo['passhash']
-        userRole = userInfo['role']
+        passhash = userInfo[3] # Get the passhash
+        userRole = userInfo[4] # Get the role
 
         if not userInfo:
             raise ValueError("Nothing was found in the database")
