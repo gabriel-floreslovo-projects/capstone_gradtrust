@@ -13,6 +13,7 @@ from .issuer import *
 from .verifier import *
 from .holder import *
 from .common import *
+from .admin_multi import *
 
 # List of all blueprints to register
 blueprints = [admin_bp, issuer_bp, verifier_bp, holder_bp, common_bp]
