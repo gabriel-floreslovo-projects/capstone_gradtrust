@@ -52,7 +52,7 @@ def login():
         )   
         cursor = conn.cursor()
         # Pull the user's passhash and salt to verify password input
-        cursor.execute(f'SELECT passhash, role FROM accounts WHERE username = {username};')
+        cursor.execute(f"SELECT passhash, role FROM accounts WHERE username = '{username}';")
         userInfo = cursor.fetchall()[0]
         cursor.close()
         passhash = userInfo['passhash']
