@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Admin - Multi-Signature Merkle Root Update</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+    <style>
+        /* Keep the same CSS as admin.html */
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #45a049;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .success {
+            background-color: #dff0d8;
+            border: 1px solid #d6e9c6;
+            color: #3c763d;
+        }
+
+        .error {
+            background-color: #f2dede;
+            border: 1px solid #ebccd1;
+            color: #a94442;
+        }
+
+        .warning {
+            background-color: #fcf8e3;
+            border: 1px solid #faebcc;
+            color: #8a6d3b;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 4px;
+        }
+
+        .result-details {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+
+        .result-details p {
+            margin: 5px 0;
+            word-break: break-all;
+        }
+
+        .result-details .label {
+            font-weight: bold;
+            color: #666;
+        }
+
+        #pendingUpdates {
+            margin-top: 20px;
+        }
+
+        .wallet-info {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Admin - Multi-Signature Merkle Root Update</h1>
+
+    <div class="warning">
+        <strong>⚠️ Warning:</strong> This action requires two different admin signatures to update the Merkle root.
+        Make sure all issuer registrations are properly synchronized before proceeding.
+    </div>
+
+    <div class="wallet-info">
+        <p><strong>Connected Address:</strong> <span id="connectedAddress">Not connected</span></p>
+        <button id="connectWallet">Connect Wallet</button>
+    </div>
+
+    <form id="updateForm">
+        <button type="submit" disabled>Update Merkle Root</button>
+    </form>
+
+    <div id="pendingUpdates"></div>
+    <div id="result"></div>
+
+    <script>
+        let web3;
+        let connectedAccount = null;
+
+        async function connectWallet() {
+            try {
+                if (typeof window.ethereum !== 'undefined') {
+                    web3 = new Web3(window.ethereum);
+                    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+                    connectedAccount = accounts[0];
+                    document.getElementById('connectedAddress').textContent = connectedAccount;
+                    document.getElementById('updateForm').querySelector('button').disabled = false;
+                    showResult('Wallet connected successfully!', 'success');
+                    loadPendingUpdates();
+                } else {
+                    showResult('Please install MetaMask!', 'error');
+                }
+            } catch (error) {
+                showResult('Error connecting wallet: ' + error.message, 'error');
+            }
+        }
+
+        async function loadPendingUpdates() {
+            try {
+                const response = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/admin/multi-sig/pending-updates');
+                const data = await response.json();
+
+                const container = document.getElementById('pendingUpdates');
+                if (data.pending && data.pending.length > 0) {
+                    container.innerHTML = `
+                        <h3>Pending Updates</h3>
+                        ${data.pending.map(update => `
+                            <div class="result-details">
+                                <p><span class="label">Merkle Root:</span><br>${update.merkleRoot}</p>
+                                <p><span class="label">First Admin:</span><br>${update.firstAdmin}</p>
+                                ${update.firstAdmin.toLowerCase() !== connectedAccount.toLowerCase() ?
+                            `<button onclick="signUpdate('${update.merkleRoot}')" class="sign-button">
+                                        Sign as Second Admin
+                                    </button>` :
+                            '<p class="warning">Waiting for second admin signature</p>'
+                        }
+                            </div>
+                        `).join('')}
+                    `;
+                } else {
+                    container.innerHTML = '';
+                }
+            } catch (error) {
+                console.error('Error loading pending updates:', error);
+            }
+        }
+
+        async function updateMerkleRoot(event) {
+            event.preventDefault();
+            const button = event.target.querySelector('button');
+
+            try {
+                button.disabled = true;
+                button.textContent = 'Signing...';
+
+                if (!web3 || !connectedAccount) {
+                    showResult('Please connect your wallet first', 'error');
+                    return;
+                }
+
+                const message = `Update Merkle Root`;
+                const signature = await web3.eth.personal.sign(message, connectedAccount);
+
+                const response = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/admin/multi-sig/update-merkle-root', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        adminAddress: connectedAccount,
+                        signature: signature
+                    }),
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    if (result.needsSecondSignature) {
+                        showResult('First signature recorded. Waiting for second admin signature.', 'success');
+                    } else {
+                        showResult(`
+                            <h3>✅ Merkle Root Updated Successfully!</h3>
+                            <div class="result-details">
+                                <p><span class="label">New Merkle Root:</span><br>${result.merkleRoot}</p>
+                                <p><span class="label">Transaction Hash:</span><br>${result.transactionHash}</p>
+                            </div>
+                        `, 'success');
+                    }
+                    loadPendingUpdates();
+                } else {
+                    showResult('Update failed: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showResult('Error: ' + error.message, 'error');
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Update Merkle Root';
+            }
+        }
+
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = type;
+            resultDiv.innerHTML = message;
+        }
+
+        // Event Listeners
+        document.getElementById('connectWallet').addEventListener('click', connectWallet);
+        document.getElementById('updateForm').addEventListener('submit', updateMerkleRoot);
+
+        // Check if already connected
+        if (typeof window.ethereum !== 'undefined') {
+            ethereum.request({ method: 'eth_accounts' })
+                .then(accounts => {
+                    if (accounts.length > 0) {
+                        connectedAccount = accounts[0];
+                        document.getElementById('connectedAddress').textContent = connectedAccount;
+                        document.getElementById('updateForm').querySelector('button').disabled = false;
+                        loadPendingUpdates();
+                    }
+                });
+
+            // Listen for account changes
+            ethereum.on('accountsChanged', function (accounts) {
+                if (accounts.length > 0) {
+                    connectedAccount = accounts[0];
+                    document.getElementById('connectedAddress').textContent = connectedAccount;
+                    document.getElementById('updateForm').querySelector('button').disabled = false;
+                    loadPendingUpdates();
+                } else {
+                    connectedAccount = null;
+                    document.getElementById('connectedAddress').textContent = 'Not connected';
+                    document.getElementById('updateForm').querySelector('button').disabled = true;
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -39,6 +39,10 @@ def create_app():
     @app.route("/register-issuer")
     def register_issuer():
         return render_template("register-issuer.html")
+    
+    @app.route("/admin-multi_sig")
+    def admine_multi():
+        return render_template("admin_multi.html")
 
     return app
 
