@@ -52,14 +52,16 @@ def login():
         )   
         cursor = conn.cursor()
         # Pull the user's passhash and salt to verify password input
+        print(f"sql - SELECT passhash, role FROM accounts WHERE username = '{username}';")
         cursor.execute(f"SELECT passhash, role FROM accounts WHERE username = '{username}';")
         userInfo = cursor.fetchall()[0]
         cursor.close()
-        passhash = userInfo[3] # Get the passhash
-        userRole = userInfo[4] # Get the role
-
         if not userInfo:
             raise ValueError("Nothing was found in the database")
+        
+        print(userInfo)
+        passhash = userInfo[3] # Get the passhash
+        userRole = userInfo[4] # Get the role
         
         if (bcrypt.checkpw(password=password.encode('utf-8'), hashed_password=bytes.fromhex(passhash))):
             return jsonify({"message":f"you're logged in. role - {userRole}"}), 500
