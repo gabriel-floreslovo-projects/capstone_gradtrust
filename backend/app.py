@@ -42,7 +42,7 @@ def create_app():
     
     @app.route("/admin-multi_sig")
     def admine_multi():
-        return render_template("admin_multi.html")
+        return render_template("admin-multi.html")
 
     return app
 
