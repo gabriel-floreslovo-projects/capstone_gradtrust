@@ -11,7 +11,8 @@ pending_root_updates = {}
 
 ADMIN_ADDRESSES = [
     "0x9dbe33e61ca2f65118fbcaf182ac2cdd2cab4a42".lower(),  # First admin
-    "0x031A433BcB6c45Fa1afa9E33D9Ad60838b0970F7".lower()   # Second admin
+    # "0x031A433BcB6c45Fa1afa9E33D9Ad60838b0970F7".lower()   # Second admin
+    "0x31B39c6F5E83FC03B7dd5A98047A3C75fD1dE487".lower() #Third admin
 ]
 
 @admin_bp.route('/get-new-root', methods=['GET'])
