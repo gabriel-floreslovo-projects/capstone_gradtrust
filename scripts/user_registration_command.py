@@ -29,7 +29,7 @@ def main():
         pepper = os.getenv('PEPPER')
         passhash = bcrypt.hashpw(passwd.encode('utf-8'), salt+pepper.encode('utf-8'))
         
-        print(f"INSERT INTO accounts VALUES ('{address}', '{username}', '{salt.hex()}', '{passhash.hex()}', '{role}');")
+        print(f"INSERT INTO accounts VALUES ('{address}', '{username}', '{passhash.hex()}', '{role}');")
 
         return 0
 
