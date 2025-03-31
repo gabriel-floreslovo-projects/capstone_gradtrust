@@ -246,6 +246,51 @@
             }
         }
 
+        async function signUpdate(merkleRoot) {
+            try {
+                if (!web3 || !connectedAccount) {
+                    showResult('Please connect your wallet first', 'error');
+                    return;
+                }
+
+                // Construct the same message as the first signature
+                const message = `Update Merkle Root: ${merkleRoot}`;
+                console.log('Second admin signing message:', message); // Debug log
+
+                const signature = await web3.eth.personal.sign(message, connectedAccount);
+                console.log('Second admin signature:', signature); // Debug log
+
+                const response = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/admin/multi-sig/update-merkle-root', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        adminAddress: connectedAccount,
+                        signature: signature,
+                        merkleRoot: merkleRoot
+                    }),
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showResult(`
+                        <h3>✅ Merkle Root Updated Successfully!</h3>
+                        <div class="result-details">
+                            <p><span class="label">New Merkle Root:</span><br>${result.merkleRoot}</p>
+                            <p><span class="label">Transaction Hash:</span><br>${result.transactionHash}</p>
+                        </div>
+                    `, 'success');
+                    loadPendingUpdates();
+                } else {
+                    showResult('Update failed: ' + result.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error); // Debug log
+                showResult('Error: ' + error.message, 'error');
+            }
+        }
+
         function showResult(message, type) {
             const resultDiv = document.getElementById('result');
             resultDiv.className = type;
