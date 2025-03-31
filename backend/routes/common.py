@@ -1,7 +1,7 @@
 from backend.routes import common_bp
 from flask import request, jsonify
 from web3 import Web3
-from backend.config import credential_verification
+from backend.config import credential_verification, CONNECTION_STRING
 import os
 import bcrypt
 import psycopg2
@@ -45,15 +45,12 @@ def login():
     try:
         username = request.form.get('username')
         password = request.form.get('password')
-        pepper = os.getenv('PEPPER')
         # Connect to the db
-        conn = psycopg2.connect(
-            'postgresql://postgres:L8RTsfQAJ3wuh7y4@exactly-assured-sawfly.data-1.use1.tembo.io:5432/postgres'
-        )   
+        conn = psycopg2.connect(CONNECTION_STRING)   
         cursor = conn.cursor()
-        # Pull the user's passhash and salt to verify password input
-        print(f"sql - SELECT passhash, role FROM accounts WHERE username = '{username}';")
-        cursor.execute(f"SELECT passhash, role FROM accounts WHERE username = '{username}';")
+        # Pull the user's passhash and role to verify password input
+        getPassandRole = "SELECT passhash, role FROM accounts WHERE username = %s;"
+        cursor.execute(getPassandRole, (username,))
         userInfo = cursor.fetchall()[0]
         cursor.close()
         if not userInfo:

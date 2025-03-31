@@ -4,11 +4,11 @@ from flask_cors import CORS
 from backend.routes import blueprints
 import os
 import dotenv
+from backend.models import db
 
 dotenv.load_dotenv()
 CONNECTION_STRING = os.getenv('CONNECTION_STRING')
 
-db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__, template_folder="../frontend/")
