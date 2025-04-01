@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import Navbar from "@/components/navbar"
-import Footer from "@/components/footer"
+import Navbar from "../../components/navbar"
+import Footer from "../../components/footer"
 import { motion } from "framer-motion"
 
 interface Credential {
@@ -20,7 +20,7 @@ export default function AboutPage() {
     e.preventDefault()
     setLoading(true)
     setError(null)
-    
+
     try {
       const response = await fetch(
         `https://gradtrust-459152f15ccf.herokuapp.com/api/pull-credentials?address=${address}`
@@ -52,9 +52,9 @@ export default function AboutPage() {
         <Navbar />
         <main className="flex flex-col items-center p-8 md:p-24 text-white">
           {/* Hero Section */}
-          <motion.section 
-            initial={{ opacity: 0, y: 50 }} 
-            animate={{ opacity: 1, y: 0 }} 
+          <motion.section
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="w-full max-w-xl bg-slate-800/40 p-8 rounded-xl shadow-lg"
           >
@@ -107,8 +107,8 @@ export default function AboutPage() {
                   {credentials.map((cred, index) => {
                     const date = new Date(cred.issuedAt * 1000).toLocaleDateString()
                     return (
-                      <div 
-                        key={index} 
+                      <div
+                        key={index}
                         className="bg-white/5 p-4 rounded-lg border border-white/10"
                       >
                         <h3 className="text-xl font-semibold mb-2">Credential</h3>

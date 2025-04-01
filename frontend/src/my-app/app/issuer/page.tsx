@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react";
-import Navbar from "@/components/navbar";
-import Footer from "@/components/footer";
+import Navbar from "../../components/navbar";
+import Footer from "../../components/footer";
 import { motion } from "framer-motion";
 
 interface IssueResult {
@@ -58,7 +58,7 @@ export default function IssuerPage() {
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         setResult({
           success: true,
@@ -91,9 +91,9 @@ export default function IssuerPage() {
       <div className="relative z-10">
         <Navbar />
         <main className="flex flex-col items-center p-8 md:p-24 text-white">
-          <motion.section 
-            initial={{ opacity: 0, y: 50 }} 
-            animate={{ opacity: 1, y: 0 }} 
+          <motion.section
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="w-full max-w-3xl bg-slate-800/40 p-8 rounded-xl shadow-lg"
           >
@@ -195,7 +195,7 @@ export default function IssuerPage() {
                   {result.success ? '✓ Success' : 'Error'}
                 </h3>
                 <p className="text-sm">{result.message}</p>
-                
+
                 {result.success && (
                   <div className="mt-3 space-y-1 text-xs">
                     <p><span className="font-medium">Transaction Hash:</span> {result.transactionHash}</p>
