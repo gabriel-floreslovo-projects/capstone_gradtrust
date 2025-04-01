@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import Navbar from "@/components/navbar"
-import Footer from "@/components/footer"
+import Navbar from "../../components/navbar"
+import Footer from "../../components/footer"
 import { motion } from "framer-motion"
 
 export default function SignInPage() {
@@ -29,9 +29,9 @@ export default function SignInPage() {
         <Navbar />
         <main className="flex flex-col items-center justify-center flex-grow p-8 md:p-24 text-white">
           {/* Sign In Section */}
-          <motion.section 
-            initial={{ opacity: 0, y: 50 }} 
-            animate={{ opacity: 1, y: 0 }} 
+          <motion.section
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="w-full max-w-md bg-slate-800/40 p-8 rounded-xl shadow-lg"
           >
