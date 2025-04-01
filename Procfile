@@ -1,0 +1,1 @@
+web: cd $NODEJS_ROOT && npm run start
