@@ -4,10 +4,7 @@ from web3 import Web3
 from backend.config import credential_verification, CONNECTION_STRING
 import os
 import bcrypt
-import psycopg2
-
-# Connect to the db
-conn = psycopg2.connect(CONNECTION_STRING)   
+import psycopg2  
 
 @common_bp.route('/pull-credentials', methods=['GET'])
 def pull_credentials():
@@ -47,26 +44,26 @@ def login():
     try:
         username = request.form.get('username')
         password = request.form.get('password')
-        # Pull the user's passhash and role to verify password input
-        cursor = conn.cursor()
-        getPassandRole = "SELECT passhash, role FROM accounts WHERE username = %s;"
-        cursor.execute(getPassandRole, (username,))
-        userInfo = cursor.fetchall()[0]
-        cursor.close()
-        if not userInfo:
-            raise ValueError("Nothing was found in the database")
-        
-        print(userInfo)
-        passhash = userInfo[0] # Get the passhash
-        userRole = userInfo[1] # Get the role
-        
-        if (bcrypt.checkpw(password=password.encode('utf-8'), hashed_password=bytes.fromhex(passhash))):
-            return jsonify({"message":f"you're logged in. role - {userRole}"}), 500
-        else:
-            return jsonify({"message":"failed login."}), 500
+        with psycopg2.connect(CONNECTION_STRING) as conn:
+            # Pull the user's passhash and role to verify password input
+            cursor = conn.cursor()
+            getPassandRole = "SELECT passhash, role FROM accounts WHERE username = %s;"
+            cursor.execute(getPassandRole, (username,))
+            userInfo = cursor.fetchall()[0]
+            cursor.close()
+            if not userInfo:
+                raise ValueError("Nothing was found in the database")
+            
+            print(userInfo)
+            passhash = userInfo[0] # Get the passhash
+            userRole = userInfo[1] # Get the role
+            
+            if (bcrypt.checkpw(password=password.encode('utf-8'), hashed_password=bytes.fromhex(passhash))):
+                return jsonify({"message":f"you're logged in. role - {userRole}"}), 500
+            else:
+                return jsonify({"message":"failed login."}), 500
             
         
     except (Exception, psycopg2.DatabaseError) as e:
         print(f"There was an error during login: {e}")
-        conn.rollback()
         return jsonify({'error': str(e)}), 500

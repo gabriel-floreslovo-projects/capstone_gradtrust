@@ -7,10 +7,6 @@ import psycopg2
 from backend.classes.issue_verification import IssuerVerification
 from backend.config import CONNECTION_STRING, w3, credential_verification, PRIVATE_KEY
 
-@issuer_bp.route('/test', methods=['GET'])
-def test():
-    return jsonify({"message":"hey buddy"}),200
-
 @issuer_bp.route('/register', methods=['POST'])
 def register_issuer():
     """Register a new issuer with their signature"""
