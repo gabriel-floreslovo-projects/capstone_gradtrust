@@ -2,8 +2,8 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import Navbar from "@/components/navbar"
-import Footer from "@/components/footer"
+import Navbar from "../../components/navbar"
+import Footer from "../../components/footer"
 import { motion } from "framer-motion"
 
 export default function AboutPage() {
@@ -20,9 +20,9 @@ export default function AboutPage() {
         <Navbar />
         <main className="flex flex-col items-center p-8 md:p-24 text-white">
           {/* Hero Section */}
-          <motion.section 
-            initial={{ opacity: 0, y: 50 }} 
-            whileInView={{ opacity: 1, y: 0 }} 
+          <motion.section
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
             className="w-full max-w-7xl mb-16"
@@ -34,9 +34,9 @@ export default function AboutPage() {
           </motion.section>
 
           {/* Our Story */}
-          <motion.section 
-            initial={{ opacity: 0, y: 50 }} 
-            whileInView={{ opacity: 1, y: 0 }} 
+          <motion.section
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             viewport={{ once: true }}
             className="w-full max-w-7xl mb-20"
@@ -45,18 +45,18 @@ export default function AboutPage() {
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
                 <p className="text-lg mb-4">
-                Founded in 2025, GradTrust was built on a simple mission: restore trust in the hiring process. 
-                Our founders saw a growing need for a secure and efficient way to verify academic credentials, 
-                ensuring that employers can confidently assess candidates based on authenticated qualifications.
+                  Founded in 2025, GradTrust was built on a simple mission: restore trust in the hiring process.
+                  Our founders saw a growing need for a secure and efficient way to verify academic credentials,
+                  ensuring that employers can confidently assess candidates based on authenticated qualifications.
                 </p>
               </div>
             </div>
           </motion.section>
 
           {/* Contact Section */}
-          <motion.section 
-            initial={{ opacity: 0, y: 50 }} 
-            whileInView={{ opacity: 1, y: 0 }} 
+          <motion.section
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
             viewport={{ once: true }}
             className="w-full max-w-7xl mb-12"
