@@ -2,7 +2,7 @@ import "./globals.css"
 import { Inter } from "next/font/google"
 import type React from "react"
 import type { Metadata } from "next"
-import MouseMoveEffect from "@/components/mouse-move-effect"
+import MouseMoveEffect from "../components/mouse-move-effect"
 
 const inter = Inter({ subsets: ["latin"] })
 
