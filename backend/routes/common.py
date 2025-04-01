@@ -6,6 +6,8 @@ import os
 import bcrypt
 import psycopg2
 
+# Connect to the db
+conn = psycopg2.connect(CONNECTION_STRING)   
 
 @common_bp.route('/pull-credentials', methods=['GET'])
 def pull_credentials():
@@ -45,10 +47,8 @@ def login():
     try:
         username = request.form.get('username')
         password = request.form.get('password')
-        # Connect to the db
-        conn = psycopg2.connect(CONNECTION_STRING)   
-        cursor = conn.cursor()
         # Pull the user's passhash and role to verify password input
+        cursor = conn.cursor()
         getPassandRole = "SELECT passhash, role FROM accounts WHERE username = %s;"
         cursor.execute(getPassandRole, (username,))
         userInfo = cursor.fetchall()[0]
@@ -68,4 +68,5 @@ def login():
         
     except (Exception, psycopg2.DatabaseError) as e:
         print(f"There was an error during login: {e}")
+        conn.rollback()
         return jsonify({'error': str(e)}), 500

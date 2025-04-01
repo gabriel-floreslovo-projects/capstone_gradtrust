@@ -1,10 +1,15 @@
 from backend.routes import admin_bp
-from flask import jsonify
+from flask import jsonify, request
 from web3 import Web3
 from backend.classes.issue_verification import IssuerVerification
-from backend.config import w3, issuer_registry, PRIVATE_KEY
+from backend.config import w3, issuer_registry, PRIVATE_KEY, CONNECTION_STRING
 import os
+import psycopg2
+import bcrypt
 import json
+
+# Connect to the db
+conn = psycopg2.connect(CONNECTION_STRING)
 
 @admin_bp.route('/update-merkle-root', methods=['POST'])
 def update_merkle_root():
@@ -62,4 +67,32 @@ def update_merkle_root():
             
     except Exception as e:
         print(f"Error in update_merkle_root: {str(e)}")  # Add logging
+        return jsonify({'error': str(e)}), 500
+
+@admin_bp.route('/create_account', methods=['POST'])
+def create_account():
+    """Create user account and insert into the database"""
+    try: 
+        username = request.form.get('username')
+        passwd = request.form.get('password')
+        address = request.form.get('address')
+        role = request.form.get('role')
+        salt = bcrypt.gensalt()
+        pepper = os.getenv('PEPPER')
+        passhash = bcrypt.hashpw(passwd.encode('utf-8'), salt+pepper.encode('utf-8'))
+        print(passhash)
+        print(type(passhash))
+        print(repr(passhash))
+           
+        cursor = conn.cursor()
+        insertAccount = "INSERT INTO accounts VALUES (%s, %s, %s, %s);"
+        cursor.execute(insertAccount, (address, username, passhash.hex(), role))
+        cursor.close()
+        conn.commit()
+
+        return jsonify({"message": f"Successfully added account for {username} with address {address}"}), 200
+
+    except (Exception, psycopg2.DatabaseError) as e:
+        print(f"There was an error during creating an account: {e}")
+        conn.rollback()
         return jsonify({'error': str(e)}), 500
