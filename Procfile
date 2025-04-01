@@ -1,1 +1,1 @@
-web: cd $NODEJS_ROOT && npm run start
+web: cd $NODEJS_ROOT && npm install && npm run start
