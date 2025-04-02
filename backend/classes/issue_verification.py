@@ -32,9 +32,12 @@ class IssuerVerification:
         self.issuer_map = {}
         leaves = []
 
+
         for address, name, signature in issuer_data:
             leaves.append(signature)
             self.issuer_map[(address, name)] = signature
+
+        # print(type(leaves))
 
         return MerkleTree(leaves)
 
@@ -44,6 +47,8 @@ class IssuerVerification:
         Returns:
             str: Hex string of Merkle root
         """
+        # print(type(self.tree.root))
+
         return self.tree.root.hex()
 
     def get_issuer_proof(self, issuer_address, issuer_name):
