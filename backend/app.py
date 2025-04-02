@@ -22,11 +22,6 @@ def create_app():
     # Register all blueprints
     for blueprint in blueprints:
         app.register_blueprint(blueprint)
-
-    #using render template for the admin page since we do not have this page in the frontend yet
-    @app.route("/admin")
-    def admin():
-        return render_template("admin.html")
     
     '''
     FRONTEND IS SERVING THE PAGES, 
@@ -37,6 +32,10 @@ def create_app():
     # @app.route("/")
     # def index():
     #     return render_template("index.html")
+
+    # @app.route("/admin")
+    # def admin():
+    #     return render_template("admin.html")
     
     # @app.route("/view-credentials")
     # def view_credentials():
