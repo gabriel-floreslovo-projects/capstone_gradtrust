@@ -8,6 +8,8 @@ from backend.config import w3, issuer_registry, PRIVATE_KEY
 
 # Store temporary signatures in memory
 pending_root_updates = {}
+# Store the final result of the last successful update
+last_successful_update = None
 
 ADMIN_ADDRESSES = [
     "0x9dbe33e61ca2f65118fbcaf182ac2cdd2cab4a42".lower(),  # First admin
@@ -66,7 +68,11 @@ def update_merkle_root_multi():
 
             # Check if this is the first or second signature
             if new_root not in pending_root_updates:
-                # First signature
+                # First signature - reset last_successful_update
+                global last_successful_update
+                last_successful_update = None
+                
+                # Store first signature
                 pending_root_updates[new_root] = {
                     'first_admin': admin_address.lower(),
                     'first_signature': signature,
@@ -112,6 +118,12 @@ def update_merkle_root_multi():
                 # Wait for transaction receipt
                 receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
 
+                # Store the final result
+                last_successful_update = {
+                    'merkleRoot': new_root,
+                    'transactionHash': receipt.transactionHash.hex()
+                }
+
                 # Clear the pending update after successful transaction
                 del pending_root_updates[new_root]
 
@@ -127,6 +139,25 @@ def update_merkle_root_multi():
 
     except Exception as e:
         print(f"Error in update_merkle_root_multi: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@admin_bp.route('/multi-sig/last-update', methods=['GET'])
+def get_last_update():
+    """Get the result of the last successful update"""
+    try:
+        if last_successful_update:
+            return jsonify({
+                'success': True,
+                'merkleRoot': last_successful_update['merkleRoot'],
+                'transactionHash': last_successful_update['transactionHash']
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'No successful updates found'
+            })
+    except Exception as e:
+        print(f"Error in get_last_update: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @admin_bp.route('/multi-sig/pending-updates', methods=['GET'])
