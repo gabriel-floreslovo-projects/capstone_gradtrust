@@ -39,21 +39,22 @@ export default function AdminPage() {
 
   useEffect(() => {
     // Check if MetaMask is installed
-    if (typeof window.ethereum !== "undefined") {
+    if (typeof window.ethereum !== 'undefined') {
       const web3Instance = new Web3(window.ethereum);
       setWeb3(web3Instance);
 
       // Check if already connected
-      window.ethereum.request({ method: "eth_accounts" }).then((accounts) => {
-        if (accounts.length > 0) {
-          setConnectedAccount(accounts[0]);
-          loadPendingUpdates();
-        }
-      });
+      window.ethereum.request({ method: 'eth_accounts' })
+        .then(accounts => {
+          if (accounts.length > 0) {
+            setConnectedAccount(accounts[0]);
+            loadPendingUpdates();
+          }
+        });
 
       // Listen for account changes
       if (window.ethereum.on) {
-        window.ethereum.on("accountsChanged", (accounts: string[]) => {
+        window.ethereum.on('accountsChanged', (accounts: string[]) => {
           if (accounts.length > 0) {
             setConnectedAccount(accounts[0]);
             loadPendingUpdates();
@@ -63,6 +64,17 @@ export default function AdminPage() {
         });
       }
     }
+
+    // Set up polling for updates
+    const pollInterval = setInterval(loadPendingUpdates, 5000); // Check every 5 seconds
+
+    // Cleanup interval on component unmount
+    return () => {
+      clearInterval(pollInterval);
+      if (window.ethereum?.removeListener) {
+        window.ethereum.removeListener('accountsChanged', () => { });
+      }
+    };
   }, []);
 
   const connectWallet = async () => {
@@ -72,7 +84,7 @@ export default function AdminPage() {
         setWeb3(web3Instance);
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         setConnectedAccount(accounts[0]);
-        setResult({ success: true });
+        // setResult({ success: true });
         loadPendingUpdates();
       } else {
         setError('Please install MetaMask!');
@@ -89,8 +101,25 @@ export default function AdminPage() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      if (data.pending) {
-        setPendingUpdates(data.pending);
+      if (data.success) {
+        setPendingUpdates(data.pending || []);
+
+        // If there are no pending updates, check for the last successful update
+        if (data.pending.length === 0) {
+          const lastUpdateResponse = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/admin/multi-sig/last-update');
+          if (lastUpdateResponse.ok) {
+            const lastUpdateData = await lastUpdateResponse.json();
+            if (lastUpdateData.success) {
+              // Update the result with the complete information
+              setResult({
+                success: true,
+                merkleRoot: lastUpdateData.merkleRoot,
+                transactionHash: lastUpdateData.transactionHash,
+                needsSecondSignature: false
+              });
+            }
+          }
+        }
       }
     } catch (error) {
       console.error('Error loading pending updates:', error);
@@ -170,7 +199,14 @@ export default function AdminPage() {
 
       const result = await response.json();
       if (result.success) {
-        setResult(result);
+        // Update the result state with the complete information
+        setResult({
+          success: true,
+          merkleRoot: result.merkleRoot,
+          transactionHash: result.transactionHash,
+          needsSecondSignature: false
+        });
+        // Reload pending updates to clear the list
         loadPendingUpdates();
       } else {
         throw new Error(result.error || 'Update failed');
@@ -246,18 +282,24 @@ export default function AdminPage() {
 
             {result && (
               <div className="mt-6 p-6 bg-green-600/20 border border-green-500 text-green-300 rounded-lg shadow-md">
-                <h3 className="text-2xl font-semibold mb-2">✅ Merkle Root Updated Successfully!</h3>
-                {result.merkleRoot && (
-                  <p className="mb-2">
-                    <span className="font-bold">New Merkle Root:</span><br />
-                    <span className="font-mono text-sm break-all">{result.merkleRoot}</span>
-                  </p>
-                )}
-                {result.transactionHash && (
-                  <p>
-                    <span className="font-bold">Transaction Hash:</span><br />
-                    <span className="font-mono text-sm break-all">{result.transactionHash}</span>
-                  </p>
+                {result.needsSecondSignature ? (
+                  <h3 className="text-2xl font-semibold mb-2">First signature recorded. Waiting for second admin signature.</h3>
+                ) : (
+                  <>
+                    <h3 className="text-2xl font-semibold mb-2">✅ Merkle Root Updated Successfully!</h3>
+                    {result.merkleRoot && (
+                      <div className="mt-4">
+                        <p className="font-bold mb-2">New Merkle Root:</p>
+                        <p className="font-mono text-sm break-all bg-gray-800/60 p-2 rounded">{result.merkleRoot}</p>
+                      </div>
+                    )}
+                    {result.transactionHash && (
+                      <div className="mt-4">
+                        <p className="font-bold mb-2">Transaction Hash:</p>
+                        <p className="font-mono text-sm break-all bg-gray-800/60 p-2 rounded">{result.transactionHash}</p>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             )}
