@@ -8,9 +8,6 @@ import psycopg2
 import bcrypt
 import json
 
-# Connect to the db
-conn = psycopg2.connect(CONNECTION_STRING)
-
 @admin_bp.route('/update-merkle-root', methods=['POST'])
 def update_merkle_root():
     """Update the Merkle root in the smart contract (Admin only)"""
@@ -69,7 +66,7 @@ def update_merkle_root():
         print(f"Error in update_merkle_root: {str(e)}")  # Add logging
         return jsonify({'error': str(e)}), 500
 
-@admin_bp.route('/create_account', methods=['POST'])
+@admin_bp.route('/create-account', methods=['POST'])
 def create_account():
     """Create user account and insert into the database"""
     try: 
@@ -77,22 +74,56 @@ def create_account():
         passwd = request.form.get('password')
         address = request.form.get('address')
         role = request.form.get('role')
-        salt = bcrypt.gensalt()
-        pepper = os.getenv('PEPPER')
-        passhash = bcrypt.hashpw(passwd.encode('utf-8'), salt+pepper.encode('utf-8'))
-        print(passhash)
-        print(type(passhash))
-        print(repr(passhash))
-           
-        cursor = conn.cursor()
-        insertAccount = "INSERT INTO accounts VALUES (%s, %s, %s, %s);"
-        cursor.execute(insertAccount, (address, username, passhash.hex(), role))
-        cursor.close()
-        conn.commit()
-
-        return jsonify({"message": f"Successfully added account for {username} with address {address}"}), 200
+        with psycopg2.connect(CONNECTION_STRING) as conn:
+            # If the username does not already exist, create the new account
+            cursor = conn.cursor()
+            isNewUserUniqueQuery = "SELECT NOT EXISTS(SELECT 1 FROM accounts WHERE username=%s)"
+            cursor.execute(isNewUserUniqueQuery, (username,))
+            newUserIsUnique = cursor.fetchone()[0]
+            if (newUserIsUnique):
+                salt = bcrypt.gensalt()
+                pepper = os.getenv('PEPPER')
+                passhash = bcrypt.hashpw(passwd.encode('utf-8'), salt+pepper.encode('utf-8'))
+                insertAccount = "INSERT INTO accounts VALUES (%s, %s, %s, %s);"
+                cursor.execute(insertAccount, (address, username, passhash.hex(), role))
+                cursor.close()
+                conn.commit()
+                return jsonify({"message": f"Successfully added account for {username} with address {address}"}), 200
+            else:
+                return jsonify({"message": "This username already exists"}), 409
 
     except (Exception, psycopg2.DatabaseError) as e:
         print(f"There was an error during creating an account: {e}")
         conn.rollback()
         return jsonify({'error': str(e)}), 500
+    
+@admin_bp.route('/delete-account', methods=['DELETE'])
+def delete_account():
+    """Remove user account from the database"""
+    try: 
+        with psycopg2.connect(CONNECTION_STRING) as conn:   
+            cursor = conn.cursor()
+            username = request.form.get('username')
+            getUserInfo = "SELECT * FROM accounts where username=%s"
+            cursor.execute(getUserInfo, (username,))
+            userInfo = cursor.fetchone()
+            address = userInfo[0]
+            passhash = userInfo[1]
+            role = userInfo[2]
+            if (role == "H" or role == "V"):
+                removeUser = "DELETE FROM accounts WHERE username=%s"
+                cursor.execute(removeUser, (username,))
+                conn.commit()
+            else:
+                # Do logic to ask for multi-admin signature
+                removeUser = "DELETE FROM accounts WHERE username=%s"
+                cursor.execute(removeUser, (username,))
+                conn.commit()
+
+            cursor.close()
+            return jsonify({"message":f"Account {username} with address {address} successfully removed."}), 200
+    
+    except (Exception, psycopg2.DatabaseError) as e:
+        print(f"There was an error while deleting an account: {e}")
+        conn.rollback()
+        return jsonify({"error": str(e)}), 500
