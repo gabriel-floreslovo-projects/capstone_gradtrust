@@ -2,17 +2,20 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from backend.routes import blueprints
+from flask_jwt_extended import JWTManager
 import os
 import dotenv
 from backend.models import db
 
 dotenv.load_dotenv()
 CONNECTION_STRING = os.getenv('CONNECTION_STRING')
-
+FRONTEND_ORIGIN = os.getenv('FRONTEND_ORIGIN')
 
 def create_app():
     app = Flask(__name__, template_folder="../frontend/")
-    CORS(app)
+    CORS(app, supports_credentials=True, origins=[FRONTEND_ORIGIN], methods=['GET','POST','DELETE','OPTIONS'],
+        allow_headers=['Content-Type', 'Authorization'])
+    JWTManager(app)
 
     app.config["SQLALCHEMY_DATABASE_URI"] = CONNECTION_STRING
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False

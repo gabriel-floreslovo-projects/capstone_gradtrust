@@ -28,6 +28,8 @@ NETWORKS = {
 NETWORK = os.getenv('NETWORK', 'sepolia')  # Default to sepolia
 
 CONNECTION_STRING = os.getenv('CONNECTION_STRING')
+SERVER_SECRET = os.getenv('SERVER_SECRET')
+JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
 
 # Web3 setup
 network_config = NETWORKS[NETWORK]
