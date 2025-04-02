@@ -1,1 +1,1 @@
-web: sh -c "cd frontend/src/my-app && npm install && npm run build && npm run start & gunicorn 'backend.app:create_app()'"
+web: gunicorn 'backend.app:create_app()'
