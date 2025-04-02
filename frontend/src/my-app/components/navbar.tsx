@@ -22,6 +22,9 @@ export default function Navbar() {
           <Link href="/verifier" className="transition-colors hover:text-primary">
             Verifier
           </Link>
+          <Link href="/admin" className="transition-colors hover:text-primary">
+            Admin
+          </Link>
         </nav>
         <div className="flex items-center space-x-4">
           <Button variant="ghost" size="sm" className="hidden md:flex">
