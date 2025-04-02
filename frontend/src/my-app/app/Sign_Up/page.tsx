@@ -7,18 +7,40 @@ import Footer from "../../components/footer"
 import { motion } from "framer-motion"
 
 export default function SignUpPage() {
-  const [email, setEmail] = useState("")
+  const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const [address, setAddress] = useState("")
 
-  const handleSignUp = (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
     if (password !== confirmPassword) {
       alert("Passwords do not match!")
       return
     }
-    console.log("Signing up with", { email, password })
-    // Add sign-up logic here (API call, Firebase, etc.)
+    console.log("Signing up with", { username, password })
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("password", password);
+    formData.append("address", address);
+
+    const response = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/create-account', {
+      method: 'POST',
+      body: formData
+    });
+    
+    const result = await response.json();
+
+    if(result.success) {
+      // Handle success (e.g., redirect to sign-in page or dashboard)
+      alert("Sign up successful! You can now sign in.");
+      window.location.href = "/Sign_In"; // Redirect to sign-in page
+    }
+    else {
+      // Handle error (e.g., show error message)
+      alert(`Sign up failed: ${result.error || "Unknown error"}`);
+      console.error("Sign up error:", result);
+    }
   }
 
   return (
@@ -43,16 +65,29 @@ export default function SignUpPage() {
             <h1 className="text-3xl font-bold mb-6 text-center">Sign Up</h1>
 
             <form onSubmit={handleSignUp} className="flex flex-col space-y-4">
-              {/* Email Input */}
+              {/* Wallet Address Input */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
                 <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="address"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
                   required
                   className="w-full p-3 rounded-lg bg-slate-900 text-white focus:ring-2 focus:ring-teal-500 outline-none"
-                  placeholder="Enter your email"
+                  placeholder="Enter your Wallet Address"
+                />
+              </div>
+
+              {/* Username Input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                <input
+                  type="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                  className="w-full p-3 rounded-lg bg-slate-900 text-white focus:ring-2 focus:ring-teal-500 outline-none"
+                  placeholder="Enter your Username"
                 />
               </div>
 
