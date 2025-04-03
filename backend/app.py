@@ -30,27 +30,32 @@ def create_app():
     # Register all blueprints
     for blueprint in blueprints:
         app.register_blueprint(blueprint)
+    
+    '''
+    FRONTEND IS SERVING THE PAGES, 
+    SO WE ARE NOT USING FLASK'S RENDER_TEMPLATE
+    FOR THESE ROUTES ANYMORE
+    '''
 
-    #telling flask what templates to render at these routes
-    @app.route("/")
-    def index():
-        return render_template("index.html")
-    
-    @app.route("/admin")
-    def admin():
-        return render_template("admin.html")
-    
-    @app.route("/view-credentials")
-    def view_credentials():
-        return render_template("view-credentials.html")
+    # @app.route("/")
+    # def index():
+    #     return render_template("index.html")
 
-    @app.route("/register-issuer")
-    def register_issuer():
-        return render_template("register-issuer.html")
+    # @app.route("/admin")
+    # def admin():
+    #     return render_template("admin.html")
     
-    @app.route("/admin-multi_sig")
-    def admine_multi():
-        return render_template("admin-multi.html")
+    # @app.route("/view-credentials")
+    # def view_credentials():
+    #     return render_template("view-credentials.html")
+
+    # @app.route("/register-issuer")
+    # def register_issuer():
+    #     return render_template("register-issuer.html")
+    
+    # @app.route("/admin-multi_sig")
+    # def admine_multi():
+    #     return render_template("admin-multi.html")
 
     return app
 
