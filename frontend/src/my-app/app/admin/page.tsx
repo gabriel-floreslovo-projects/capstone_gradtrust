@@ -110,12 +110,7 @@ export default function AdminPage() {
             // Add a small delay to ensure backend has processed everything
             await new Promise(resolve => setTimeout(resolve, 1000));
 
-            const lastUpdateResponse = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/admin/multi-sig/last_update', {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json'
-              }
-            });
+            const lastUpdateResponse = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/admin/multi-sig/last_update');
             if (lastUpdateResponse.ok) {
               const lastUpdateData = await lastUpdateResponse.json();
               if (lastUpdateData.success) {
