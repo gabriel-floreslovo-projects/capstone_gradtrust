@@ -118,13 +118,13 @@ def update_merkle_root_multi():
                 # Wait for transaction receipt
                 receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
 
-                # Store the final result
+                # Store the final result first
                 last_successful_update = {
                     'merkleRoot': new_root,
                     'transactionHash': receipt.transactionHash.hex()
                 }
 
-                # Clear the pending update after successful transaction
+                # Then clear the pending update
                 del pending_root_updates[new_root]
 
                 return jsonify({
