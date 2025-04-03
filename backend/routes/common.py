@@ -61,7 +61,7 @@ def login():
             
             if (bcrypt.checkpw(password=password.encode('utf-8'), hashed_password=bytes.fromhex(passhash))):
                 # Create JWT token for access control
-                token = create_access_token(identity=username, additional_claims={"role": userRole})
+                token = create_access_token(identity=sername, additional_claims={"role": userRole})
                 response = jsonify({"message":f"you're logged in. role - {userRole}"})
                 response.set_cookie('access_token', token, httponly=True, secure=True)
                 return response, 200
