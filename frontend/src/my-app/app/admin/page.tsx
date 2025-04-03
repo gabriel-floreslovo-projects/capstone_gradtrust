@@ -106,7 +106,7 @@ export default function AdminPage() {
 
         // If there are no pending updates, check for the last successful update
         if (data.pending.length === 0) {
-          const lastUpdateResponse = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/admin/multi-sig/last-update');
+          const lastUpdateResponse = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/admin/multi-sig/last_update');
           if (lastUpdateResponse.ok) {
             const lastUpdateData = await lastUpdateResponse.json();
             if (lastUpdateData.success) {
