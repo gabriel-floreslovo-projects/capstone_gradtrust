@@ -12,7 +12,15 @@ CONNECTION_STRING = os.getenv('CONNECTION_STRING')
 
 def create_app():
     app = Flask(__name__, template_folder="../frontend/")
-    CORS(app)
+    
+    # Configure CORS with more permissive settings
+    CORS(app, 
+         resources={r"/*": {
+             "origins": ["https://gradtrust-frontend-0200dc93e280.herokuapp.com"],
+             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+             "allow_headers": ["Content-Type", "Authorization"],
+             "supports_credentials": True
+         }})
 
     app.config["SQLALCHEMY_DATABASE_URI"] = CONNECTION_STRING
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
