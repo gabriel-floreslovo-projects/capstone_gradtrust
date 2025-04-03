@@ -106,18 +106,31 @@ export default function AdminPage() {
 
         // If there are no pending updates, check for the last successful update
         if (data.pending.length === 0) {
-          const lastUpdateResponse = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/admin/multi-sig/last_update');
-          if (lastUpdateResponse.ok) {
-            const lastUpdateData = await lastUpdateResponse.json();
-            if (lastUpdateData.success) {
-              // Update the result with the complete information
-              setResult({
-                success: true,
-                merkleRoot: lastUpdateData.merkleRoot,
-                transactionHash: lastUpdateData.transactionHash,
-                needsSecondSignature: false
-              });
+          try {
+            // Add a small delay to ensure backend has processed everything
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            const lastUpdateResponse = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/admin/multi-sig/last_update', {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            });
+            if (lastUpdateResponse.ok) {
+              const lastUpdateData = await lastUpdateResponse.json();
+              if (lastUpdateData.success) {
+                // Update the result with the complete information
+                setResult({
+                  success: true,
+                  merkleRoot: lastUpdateData.merkleRoot,
+                  transactionHash: lastUpdateData.transactionHash,
+                  needsSecondSignature: false
+                });
+              }
             }
+          } catch (error) {
+            console.error('Error loading last update:', error);
+            setError('Error loading last update');
           }
         }
       }
