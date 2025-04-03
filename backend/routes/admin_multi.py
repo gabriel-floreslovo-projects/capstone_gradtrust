@@ -141,7 +141,7 @@ def update_merkle_root_multi():
         print(f"Error in update_merkle_root_multi: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
-@admin_bp.route('/multi-sig/last-update', methods=['GET'])
+@admin_bp.route('/multi-sig/last_update', methods=['GET'])
 def get_last_update():
     """Get the result of the last successful update"""
     try:
