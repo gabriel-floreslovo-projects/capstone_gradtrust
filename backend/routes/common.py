@@ -50,10 +50,10 @@ def login():
             cursor = conn.cursor()
             getPassandRole = "SELECT passhash, role FROM accounts WHERE username = %s;"
             cursor.execute(getPassandRole, (username,))
-            userInfo = cursor.fetchall()[0]
+            userInfo = cursor.fetchone()
             cursor.close()
             if not userInfo:
-                raise ValueError("Nothing was found in the database")
+                return jsonify({"error": "This username does not exist"}), 403
             
             print(userInfo)
             passhash = userInfo[0] # Get the passhash

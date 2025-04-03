@@ -28,8 +28,10 @@ NETWORKS = {
 NETWORK = os.getenv('NETWORK', 'sepolia')  # Default to sepolia
 
 CONNECTION_STRING = os.getenv('CONNECTION_STRING')
-SERVER_SECRET = os.getenv('SERVER_SECRET')
+SECRET_KEY = os.getenv('SECRET_KEY')
 JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
+
+assert JWT_SECRET_KEY, "JWT_SECRET_KEY is not set!"
 
 # Web3 setup
 network_config = NETWORKS[NETWORK]

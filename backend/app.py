@@ -6,6 +6,7 @@ from flask_jwt_extended import JWTManager
 import os
 import dotenv
 from backend.models import db
+from backend.config import JWT_SECRET_KEY, SECRET_KEY
 
 dotenv.load_dotenv()
 CONNECTION_STRING = os.getenv('CONNECTION_STRING')
@@ -19,6 +20,8 @@ def create_app():
 
     app.config["SQLALCHEMY_DATABASE_URI"] = CONNECTION_STRING
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
+    app.config["SECRET_KEY"] = SECRET_KEY
 
     db.init_app(app)
     
