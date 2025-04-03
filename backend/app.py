@@ -22,6 +22,8 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
     app.config["SECRET_KEY"] = SECRET_KEY
+    app.config["JWT_TOKEN_LOCATION"] = ["headers", "cookies"]
+    app.config["JWT_ACCESS_COOKIE_NAME"] = "access_token"
 
     db.init_app(app)
     
