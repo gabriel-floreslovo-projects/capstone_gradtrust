@@ -6,6 +6,7 @@ from eth_account import Account
 from backend.classes.issue_verification import IssuerVerification
 from backend.config import w3, issuer_registry, PRIVATE_KEY
 
+
 # Store temporary signatures in memory
 pending_root_updates = {}
 # Store the final result of the last successful update
@@ -164,15 +165,28 @@ def get_last_update():
 def get_pending_updates():
     """Get list of pending Merkle root updates"""
     try:
+        pending = [
+            {
+                'merkleRoot': root,
+                'firstAdmin': data['first_admin']
+            }
+            for root, data in pending_root_updates.items()
+        ]
+        
+        # If there are no pending updates, include the last successful update
+        if not pending and last_successful_update:
+            return jsonify({
+                'success': True,
+                'pending': [],
+                'lastUpdate': {
+                    'merkleRoot': last_successful_update['merkleRoot'],
+                    'transactionHash': last_successful_update['transactionHash']
+                }
+            })
+            
         return jsonify({
             'success': True,
-            'pending': [
-                {
-                    'merkleRoot': root,
-                    'firstAdmin': data['first_admin']
-                }
-                for root, data in pending_root_updates.items()
-            ]
+            'pending': pending
         })
     except Exception as e:
         print(f"Error in get_pending_updates: {str(e)}")
