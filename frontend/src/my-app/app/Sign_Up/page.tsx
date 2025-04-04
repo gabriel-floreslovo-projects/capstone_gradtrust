@@ -37,6 +37,7 @@ export default function SignUpPage() {
     if(sanitizedAddress.length === 42){
       // Valid Ethereum address length (0x + 40 hex characters)
       alert("Please enter a valid Ethereum address.");
+      console.error("Current address is of length:", sanitizedAddress.length);
       console.error("Invalid Ethereum address length");
       return;
     }
