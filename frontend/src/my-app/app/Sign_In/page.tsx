@@ -9,11 +9,23 @@ import { motion } from "framer-motion"
 export default function SignInPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const backendUrl = process.env.BACKEND_DEPLOYMENT
 
-  const handleSignIn = (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
     console.log("Signing in with", { email, password })
-    // Add authentication logic here (API call, Firebase, etc.)
+    
+    const loginRes = await fetch(`${backendUrl}/api/login`,{
+      "method": "POST",
+      "body": JSON.stringify({
+        username: email,
+        password: password
+      })
+    });
+
+    const loginData = await loginRes.json();
+
+    console.log(loginData);
   }
 
   return (
