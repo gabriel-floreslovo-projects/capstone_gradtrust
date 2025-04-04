@@ -192,3 +192,17 @@ def get_pending_updates():
     except Exception as e:
         print(f"Error in get_pending_updates: {str(e)}")
         return jsonify({'error': str(e)}), 500
+
+@admin_bp.route('/multi-sig/clear-pending-updates', methods=['POST'])
+def clear_pending_updates():
+    """Clear all pending Merkle root updates"""
+    try:
+        global pending_root_updates
+        pending_root_updates = {}
+        return jsonify({
+            'success': True,
+            'message': 'All pending updates have been cleared'
+        })
+    except Exception as e:
+        print(f"Error in clear_pending_updates: {str(e)}")
+        return jsonify({'error': str(e)}), 500
