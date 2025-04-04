@@ -11,10 +11,11 @@ from backend.config import JWT_SECRET_KEY, SECRET_KEY
 dotenv.load_dotenv()
 CONNECTION_STRING = os.getenv('CONNECTION_STRING')
 FRONTEND_ORIGIN = os.getenv('FRONTEND_ORIGIN')
+BACKEND_DEPLOYMENT = os.getenv('BACKEND_DEPLOYMENT')
 
 def create_app():
     app = Flask(__name__, template_folder="../frontend/")
-    CORS(app, supports_credentials=True, origins=[FRONTEND_ORIGIN], methods=['GET','POST','DELETE','OPTIONS'],
+    CORS(app, supports_credentials=True, origins=[FRONTEND_ORIGIN, BACKEND_DEPLOYMENT], methods=['GET','POST','DELETE','OPTIONS'],
         allow_headers=['Content-Type', 'Authorization'])
     JWTManager(app)
 
