@@ -31,7 +31,7 @@ CONNECTION_STRING = os.getenv('CONNECTION_STRING')
 SECRET_KEY = os.getenv('SECRET_KEY')
 JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
 
-assert JWT_SECRET_KEY, "JWT_SECRET_KEY is not set!"
+# assert JWT_SECRET_KEY, "JWT_SECRET_KEY is not set!"
 
 # Web3 setup
 network_config = NETWORKS[NETWORK]
