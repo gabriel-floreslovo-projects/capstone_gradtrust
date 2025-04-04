@@ -36,7 +36,6 @@ export default function AdminPage() {
     const [updating, setUpdating] = useState(false);
     const [result, setResult] = useState<UpdateResult | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [signingMerkleRoot, setSigningMerkleRoot] = useState<string | null>(null);
 
     useEffect(() => {
         // Check if MetaMask is installed
@@ -105,21 +104,14 @@ export default function AdminPage() {
             if (data.success) {
                 setPendingUpdates(data.pending || []);
 
-                // If there are no pending updates, check for the last successful update
-                if (data.pending.length === 0) {
-                    const lastUpdateResponse = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/admin/multi-sig/last-update');
-                    if (lastUpdateResponse.ok) {
-                        const lastUpdateData = await lastUpdateResponse.json();
-                        if (lastUpdateData.success) {
-                            // Update the result with the complete information
-                            setResult({
-                                success: true,
-                                merkleRoot: lastUpdateData.merkleRoot,
-                                transactionHash: lastUpdateData.transactionHash,
-                                needsSecondSignature: false
-                            });
-                        }
-                    }
+                // If there are no pending updates and we have a lastUpdate, show that
+                if (data.pending.length === 0 && data.lastUpdate) {
+                    setResult({
+                        success: true,
+                        merkleRoot: data.lastUpdate.merkleRoot,
+                        transactionHash: data.lastUpdate.transactionHash,
+                        needsSecondSignature: false
+                    });
                 }
             }
         } catch (error) {
@@ -179,9 +171,6 @@ export default function AdminPage() {
 
     const signUpdate = async (merkleRoot: string) => {
         try {
-            setSigningMerkleRoot(merkleRoot);
-            setError(null);
-
             if (!web3 || !connectedAccount) {
                 throw new Error('Please connect your wallet first');
             }
@@ -217,8 +206,6 @@ export default function AdminPage() {
             }
         } catch (error) {
             setError(error instanceof Error ? error.message : 'An unknown error occurred');
-        } finally {
-            setSigningMerkleRoot(null);
         }
     };
 
@@ -274,12 +261,9 @@ export default function AdminPage() {
                                         {update.firstAdmin.toLowerCase() !== connectedAccount?.toLowerCase() ? (
                                             <button
                                                 onClick={() => signUpdate(update.merkleRoot)}
-                                                disabled={signingMerkleRoot === update.merkleRoot}
-                                                className="bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50"
+                                                className="bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
                                             >
-                                                {signingMerkleRoot === update.merkleRoot ?
-                                                    "Signing and uploading to blockchain..." :
-                                                    "Sign as Second Admin"}
+                                                Sign as Second Admin
                                             </button>
                                         ) : (
                                             <p className="text-yellow-300">Waiting for second admin signature</p>
