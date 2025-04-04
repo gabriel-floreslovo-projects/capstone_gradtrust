@@ -33,9 +33,9 @@ def create_app():
     for blueprint in blueprints:
         app.register_blueprint(blueprint)
 
-    @app.route("/")
-    def hello():
-        return jsonify({"msg": "backend is running"}), 200
+    # @app.route("/")
+    # def hello():
+    #     return jsonify({"msg": "backend is running"}), 200
     
     '''
     FRONTEND IS SERVING THE PAGES, 
