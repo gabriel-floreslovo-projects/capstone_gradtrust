@@ -37,7 +37,27 @@ export default function AdminPage() {
     const [result, setResult] = useState<UpdateResult | null>(null);
     const [error, setError] = useState<string | null>(null);
 
+    const clearPendingUpdatesOnLoad = async () => {
+        try {
+            const response = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/admin/multi-sig/clear-pending-updates', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            console.log('Pending updates cleared on page load');
+        } catch (error) {
+            console.error('Error clearing pending updates on load:', error);
+        }
+    };
+
     useEffect(() => {
+        // Clear pending updates on page load
+        clearPendingUpdatesOnLoad();
+
         // Check if MetaMask is installed
         if (typeof window.ethereum !== 'undefined') {
             const web3Instance = new Web3(window.ethereum);
