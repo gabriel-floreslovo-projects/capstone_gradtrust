@@ -12,17 +12,40 @@ export default function SignUpPage() {
   const [confirmPassword, setConfirmPassword] = useState("")
   const [address, setAddress] = useState("")
 
+  const sanitizeInput = (input: string) => {
+    //trim whitespace and remove any unwanted characters
+    const trimmedInput = input.trim(); // Remove leading and trailing whitespace
+    const sanitizedInput = trimmedInput.replace(/['"\\<>;]/g, "");
+
+    return sanitizedInput;
+  }
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!")
-      return
+
+    const sanitizedUsername = sanitizeInput(username);
+    const sanitizedPassword = sanitizeInput(password);
+    const sanitizedConfirmPassword = sanitizeInput(confirmPassword);
+    const sanitizedAddress = sanitizeInput(address);
+
+    if(sanitizedPassword !== sanitizedConfirmPassword) {
+      alert("Passwords do not match. Please try again.");
+      console.error("Passwords do not match");
+      return;
     }
-    console.log("Signing up with", { username, password })
+
+    if(sanitizedAddress.length === 42){
+      // Valid Ethereum address length (0x + 40 hex characters)
+      alert("Please enter a valid Ethereum address.");
+      console.error("Invalid Ethereum address length");
+      return;
+    }
+
+    console.log("Signing up with", { sanitizedUsername, sanitizedPassword })
     const formData = new FormData();
-    formData.append("username", username);
-    formData.append("password", password);
-    formData.append("address", address);
+    formData.append("username", sanitizedUsername);
+    formData.append("password", sanitizedPassword);
+    formData.append("address", sanitizedAddress);
 
     const response = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/create-account', {
       method: 'POST',
@@ -69,12 +92,12 @@ export default function SignUpPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">Wallet</label>
                 <input
-                  type="address"
+                  type="text"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   required
                   className="w-full p-3 rounded-lg bg-slate-900 text-white focus:ring-2 focus:ring-teal-500 outline-none"
-                  placeholder="Enter your Wallet Address"
+                  placeholder="Enter your Wallet Address (0x...)"
                 />
               </div>
 
@@ -82,7 +105,7 @@ export default function SignUpPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">Username</label>
                 <input
-                  type="username"
+                  type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
