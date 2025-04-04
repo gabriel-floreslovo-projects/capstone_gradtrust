@@ -90,11 +90,11 @@ def create():
                     cursor.execute(insertAccount, (address, username, passhash.hex(), role))
                     cursor.close()
                     conn.commit()
-                    return jsonify({"message": f"Successfully added account for {username} with address {address}"}), 200
+                    return jsonify({"success": True, "message": f"Successfully added account for {username} with address {address}"}), 200
                 else:
-                    return jsonify({"message": "This username already exists"}), 409
+                    return jsonify({"sucess": True, "message": "This username already exists"}), 409
 
     except (Exception, psycopg2.DatabaseError) as e:
         print(f"There was an error during creating an account: {e}")
         conn.rollback()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({"success": True, "error": str(e)}), 500
