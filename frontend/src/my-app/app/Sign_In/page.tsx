@@ -14,6 +14,8 @@ export default function SignInPage() {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
     console.log("Signing in with", { email, password })
+
+    console.log(`${backendUrl}/api/login`)
     
     const loginRes = await fetch(`${backendUrl}/api/login`,{
       "method": "POST",
