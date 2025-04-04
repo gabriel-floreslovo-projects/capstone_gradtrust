@@ -300,7 +300,7 @@ export default function AdminPage() {
                                     <h3 className="text-2xl font-semibold mb-2">First signature recorded. Waiting for second admin signature.</h3>
                                 ) : (
                                     <>
-                                        <h3 className="text-2xl font-semibold mb-2">✅ Merkle Root Updated Successfully!</h3>
+                                        <h3 className="text-2xl font-semibold mb-2">✅ Merkle Root Update Transaction Submitted!</h3>
                                         {result.merkleRoot && (
                                             <div className="mt-4">
                                                 <p className="font-bold mb-2">New Merkle Root:</p>
@@ -311,6 +311,7 @@ export default function AdminPage() {
                                             <div className="mt-4">
                                                 <p className="font-bold mb-2">Transaction Hash:</p>
                                                 <p className="font-mono text-sm break-all bg-gray-800/60 p-2 rounded">{result.transactionHash}</p>
+                                                <p className="mt-2 text-sm">The transaction has been submitted to the blockchain and is being processed.</p>
                                             </div>
                                         )}
                                     </>
