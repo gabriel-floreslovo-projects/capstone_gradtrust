@@ -54,7 +54,7 @@ export default function SignInPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
                 <input
-                  type="email"
+                  type="string"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
