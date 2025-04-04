@@ -201,6 +201,11 @@ export default function AdminPage() {
 
             const result = await response.json();
             if (result.success) {
+                // Immediately clear pending updates when we get a successful transaction
+                if (result.transactionHash) {
+                    setPendingUpdates([]);
+                }
+
                 // Update the result state with the complete information
                 setResult({
                     success: true,
@@ -208,7 +213,8 @@ export default function AdminPage() {
                     transactionHash: result.transactionHash,
                     needsSecondSignature: false
                 });
-                // Reload pending updates to clear the list
+
+                // Also reload pending updates to make sure everything is in sync with the server
                 loadPendingUpdates();
             } else {
                 throw new Error(result.error || 'Update failed');
