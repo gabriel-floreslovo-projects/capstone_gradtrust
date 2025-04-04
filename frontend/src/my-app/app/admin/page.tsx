@@ -270,15 +270,22 @@ export default function AdminPage() {
                                         <p className="mb-2"><span className="font-bold">First Admin:</span></p>
                                         <p className="font-mono text-sm break-all mb-4">{update.firstAdmin}</p>
                                         {update.firstAdmin.toLowerCase() !== connectedAccount?.toLowerCase() ? (
-                                            <button
-                                                onClick={() => signUpdate(update.merkleRoot)}
-                                                disabled={signingMerkleRoot === update.merkleRoot}
-                                                className="bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50"
-                                            >
-                                                {signingMerkleRoot === update.merkleRoot ?
-                                                    "Signing and uploading to blockchain..." :
-                                                    "Sign as Second Admin"}
-                                            </button>
+                                            <>
+                                                <p className="text-gray-300 mb-2">
+                                                    This is a two-step process:
+                                                    1) Sign with your wallet
+                                                    2) Server submits the transaction to blockchain
+                                                </p>
+                                                <button
+                                                    onClick={() => signUpdate(update.merkleRoot)}
+                                                    disabled={signingMerkleRoot === update.merkleRoot}
+                                                    className="bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50"
+                                                >
+                                                    {signingMerkleRoot === update.merkleRoot ?
+                                                        "Submitting to blockchain..." :
+                                                        "Sign as Second Admin"}
+                                                </button>
+                                            </>
                                         ) : (
                                             <p className="text-yellow-300">Waiting for second admin signature</p>
                                         )}
