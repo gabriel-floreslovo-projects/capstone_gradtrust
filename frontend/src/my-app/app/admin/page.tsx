@@ -37,6 +37,7 @@ export default function AdminPage() {
     const [result, setResult] = useState<UpdateResult | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [signingMerkleRoot, setSigningMerkleRoot] = useState<string | null>(null);
+    const [clearingPending, setClearingPending] = useState(false);
 
     useEffect(() => {
         // Check if MetaMask is installed
@@ -226,6 +227,15 @@ export default function AdminPage() {
         }
     };
 
+    // Add a function to manually clear pending updates
+    const clearPendingUpdates = () => {
+        setClearingPending(true);
+        setPendingUpdates([]);
+        setResult(null);
+        setError(null);
+        setTimeout(() => setClearingPending(false), 1000);
+    };
+
     return (
         <div className="relative min-h-screen">
             <div className="pointer-events-none fixed inset-0">
@@ -268,7 +278,16 @@ export default function AdminPage() {
 
                         {pendingUpdates.length > 0 && (
                             <div className="mt-8">
-                                <h3 className="text-2xl font-semibold mb-4">Pending Updates</h3>
+                                <div className="flex justify-between items-center mb-4">
+                                    <h3 className="text-2xl font-semibold">Pending Updates</h3>
+                                    <button
+                                        onClick={clearPendingUpdates}
+                                        disabled={clearingPending}
+                                        className="bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-1 px-3 rounded-lg transition-colors disabled:opacity-50"
+                                    >
+                                        {clearingPending ? "Clearing..." : "Clear All Pending Updates"}
+                                    </button>
+                                </div>
                                 {pendingUpdates.map((update, index) => (
                                     <div key={index} className="bg-gray-700/60 p-4 rounded-lg mb-4">
                                         <p className="mb-2"><span className="font-bold">Merkle Root:</span></p>
