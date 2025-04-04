@@ -1,7 +1,7 @@
 from backend.routes import common_bp
 from flask import request, jsonify
 from web3 import Web3
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt
 from backend.config import credential_verification, CONNECTION_STRING
 import os
 import bcrypt
@@ -61,7 +61,7 @@ def login():
             
             if (bcrypt.checkpw(password=password.encode('utf-8'), hashed_password=bytes.fromhex(passhash))):
                 # Create JWT token for access control
-                token = create_access_token(identity=sername, additional_claims={"role": userRole})
+                token = create_access_token(identity=username, additional_claims={"role": userRole})
                 response = jsonify({"message":f"you're logged in. role - {userRole}"})
                 response.set_cookie('access_token', token, httponly=True, secure=True)
                 return response, 200
@@ -77,5 +77,5 @@ def login():
 @jwt_required()
 def me():
     """Return details of logged in user"""
-    user = get_jwt_identity()
+    user = get_jwt()
     return jsonify(user)

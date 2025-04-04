@@ -20,6 +20,7 @@ def create_app():
 
     app.config["SQLALCHEMY_DATABASE_URI"] = CONNECTION_STRING
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    # Not sure why I had to enable jwt stuff with app.config (I thought that was what config file was for), but here we are
     app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
     app.config["SECRET_KEY"] = SECRET_KEY
     app.config["JWT_TOKEN_LOCATION"] = ["headers", "cookies"]
