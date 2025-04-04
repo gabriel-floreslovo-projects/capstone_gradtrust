@@ -36,8 +36,6 @@ export default function AdminPage() {
     const [updating, setUpdating] = useState(false);
     const [result, setResult] = useState<UpdateResult | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [signingMerkleRoot, setSigningMerkleRoot] = useState<string | null>(null);
-    const [clearingPending, setClearingPending] = useState(false);
 
     useEffect(() => {
         // Check if MetaMask is installed
@@ -67,22 +65,17 @@ export default function AdminPage() {
             }
         }
 
-        // Set up polling only if there's a pending update that needs the second admin's signature
-        let pollInterval: NodeJS.Timeout | null = null;
-        if (pendingUpdates.length > 0 && result?.needsSecondSignature) {
-            pollInterval = setInterval(loadPendingUpdates, 5000); // Check every 5 seconds
-        }
+        // Set up polling for updates
+        const pollInterval = setInterval(loadPendingUpdates, 5000); // Check every 5 seconds
 
-        // Cleanup on component unmount
+        // Cleanup interval on component unmount
         return () => {
-            if (pollInterval) {
-                clearInterval(pollInterval);
-            }
+            clearInterval(pollInterval);
             if (window.ethereum?.removeListener) {
                 window.ethereum.removeListener('accountsChanged', () => { });
             }
         };
-    }, [pendingUpdates.length, result?.needsSecondSignature]); // Add dependencies to re-run effect when these change
+    }, []);
 
     const connectWallet = async () => {
         try {
@@ -178,9 +171,6 @@ export default function AdminPage() {
 
     const signUpdate = async (merkleRoot: string) => {
         try {
-            setSigningMerkleRoot(merkleRoot);
-            setError(null);
-
             if (!web3 || !connectedAccount) {
                 throw new Error('Please connect your wallet first');
             }
@@ -202,11 +192,6 @@ export default function AdminPage() {
 
             const result = await response.json();
             if (result.success) {
-                // Immediately clear pending updates when we get a successful transaction
-                if (result.transactionHash) {
-                    setPendingUpdates([]);
-                }
-
                 // Update the result state with the complete information
                 setResult({
                     success: true,
@@ -214,26 +199,14 @@ export default function AdminPage() {
                     transactionHash: result.transactionHash,
                     needsSecondSignature: false
                 });
-
-                // Also reload pending updates to make sure everything is in sync with the server
+                // Reload pending updates to clear the list
                 loadPendingUpdates();
             } else {
                 throw new Error(result.error || 'Update failed');
             }
         } catch (error) {
             setError(error instanceof Error ? error.message : 'An unknown error occurred');
-        } finally {
-            setSigningMerkleRoot(null);
         }
-    };
-
-    // Add a function to manually clear pending updates
-    const clearPendingUpdates = () => {
-        setClearingPending(true);
-        setPendingUpdates([]);
-        setResult(null);
-        setError(null);
-        setTimeout(() => setClearingPending(false), 1000);
     };
 
     return (
@@ -278,16 +251,7 @@ export default function AdminPage() {
 
                         {pendingUpdates.length > 0 && (
                             <div className="mt-8">
-                                <div className="flex justify-between items-center mb-4">
-                                    <h3 className="text-2xl font-semibold">Pending Updates</h3>
-                                    <button
-                                        onClick={clearPendingUpdates}
-                                        disabled={clearingPending}
-                                        className="bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-1 px-3 rounded-lg transition-colors disabled:opacity-50"
-                                    >
-                                        {clearingPending ? "Clearing..." : "Clear All Pending Updates"}
-                                    </button>
-                                </div>
+                                <h3 className="text-2xl font-semibold mb-4">Pending Updates</h3>
                                 {pendingUpdates.map((update, index) => (
                                     <div key={index} className="bg-gray-700/60 p-4 rounded-lg mb-4">
                                         <p className="mb-2"><span className="font-bold">Merkle Root:</span></p>
@@ -295,22 +259,12 @@ export default function AdminPage() {
                                         <p className="mb-2"><span className="font-bold">First Admin:</span></p>
                                         <p className="font-mono text-sm break-all mb-4">{update.firstAdmin}</p>
                                         {update.firstAdmin.toLowerCase() !== connectedAccount?.toLowerCase() ? (
-                                            <>
-                                                <p className="text-gray-300 mb-2">
-                                                    This is a two-step process:
-                                                    1) Sign with your wallet
-                                                    2) Server submits the transaction to blockchain
-                                                </p>
-                                                <button
-                                                    onClick={() => signUpdate(update.merkleRoot)}
-                                                    disabled={signingMerkleRoot === update.merkleRoot}
-                                                    className="bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50"
-                                                >
-                                                    {signingMerkleRoot === update.merkleRoot ?
-                                                        "Submitting to blockchain..." :
-                                                        "Sign as Second Admin"}
-                                                </button>
-                                            </>
+                                            <button
+                                                onClick={() => signUpdate(update.merkleRoot)}
+                                                className="bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                                            >
+                                                Sign as Second Admin
+                                            </button>
                                         ) : (
                                             <p className="text-yellow-300">Waiting for second admin signature</p>
                                         )}
@@ -325,7 +279,7 @@ export default function AdminPage() {
                                     <h3 className="text-2xl font-semibold mb-2">First signature recorded. Waiting for second admin signature.</h3>
                                 ) : (
                                     <>
-                                        <h3 className="text-2xl font-semibold mb-2">✅ Merkle Root Update Transaction Submitted!</h3>
+                                        <h3 className="text-2xl font-semibold mb-2">✅ Merkle Root Updated Successfully!</h3>
                                         {result.merkleRoot && (
                                             <div className="mt-4">
                                                 <p className="font-bold mb-2">New Merkle Root:</p>
@@ -336,7 +290,6 @@ export default function AdminPage() {
                                             <div className="mt-4">
                                                 <p className="font-bold mb-2">Transaction Hash:</p>
                                                 <p className="font-mono text-sm break-all bg-gray-800/60 p-2 rounded">{result.transactionHash}</p>
-                                                <p className="mt-2 text-sm">The transaction has been submitted to the blockchain and is being processed.</p>
                                             </div>
                                         )}
                                     </>
