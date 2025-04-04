@@ -67,3 +67,34 @@ def login():
     except (Exception, psycopg2.DatabaseError) as e:
         print(f"There was an error during login: {e}")
         return jsonify({'error': str(e)}), 500
+
+@common_bp.route('/create-account', methods=['POST'])
+def create():
+    try:
+        """Let users create an account"""
+        username = request.form.get('username')
+        password = request.form.get('password')
+        address = request.form.get('address')
+        role = 'H' #new accounts will default to holder
+        with psycopg2.connect(CONNECTION_STRING) as conn:
+                # If the username does not already exist, create the new account
+                cursor = conn.cursor()
+                isNewUserUniqueQuery = "SELECT NOT EXISTS(SELECT 1 FROM accounts WHERE username=%s)"
+                cursor.execute(isNewUserUniqueQuery, (username,))
+                newUserIsUnique = cursor.fetchone()[0]
+                if (newUserIsUnique):
+                    salt = bcrypt.gensalt()
+                    pepper = os.getenv('PEPPER')
+                    passhash = bcrypt.hashpw(password.encode('utf-8'), salt+pepper.encode('utf-8'))
+                    insertAccount = "INSERT INTO accounts VALUES (%s, %s, %s, %s);"
+                    cursor.execute(insertAccount, (address, username, passhash.hex(), role))
+                    cursor.close()
+                    conn.commit()
+                    return jsonify({"message": f"Successfully added account for {username} with address {address}"}), 200
+                else:
+                    return jsonify({"message": "This username already exists"}), 409
+
+    except (Exception, psycopg2.DatabaseError) as e:
+        print(f"There was an error during creating an account: {e}")
+        conn.rollback()
+        return jsonify({'error': str(e)}), 500
