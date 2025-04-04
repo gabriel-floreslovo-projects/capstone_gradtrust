@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from backend.routes import blueprints
@@ -31,16 +31,16 @@ def create_app():
     # Register all blueprints
     for blueprint in blueprints:
         app.register_blueprint(blueprint)
+
+    @app.route("/")
+    def hello():
+        return jsonify({"msg": "backend is running"}), 200
     
     '''
     FRONTEND IS SERVING THE PAGES, 
     SO WE ARE NOT USING FLASK'S RENDER_TEMPLATE
     FOR THESE ROUTES ANYMORE
     '''
-
-    # @app.route("/")
-    # def index():
-    #     return render_template("index.html")
 
     # @app.route("/admin")
     # def admin():
