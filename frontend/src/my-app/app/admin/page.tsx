@@ -36,6 +36,7 @@ export default function AdminPage() {
     const [updating, setUpdating] = useState(false);
     const [result, setResult] = useState<UpdateResult | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [signingMerkleRoot, setSigningMerkleRoot] = useState<string | null>(null);
 
     useEffect(() => {
         // Check if MetaMask is installed
@@ -65,17 +66,22 @@ export default function AdminPage() {
             }
         }
 
-        // Set up polling for updates
-        const pollInterval = setInterval(loadPendingUpdates, 5000); // Check every 5 seconds
+        // Set up polling only if there's a pending update that needs the second admin's signature
+        let pollInterval: NodeJS.Timeout | null = null;
+        if (pendingUpdates.length > 0 && result?.needsSecondSignature) {
+            pollInterval = setInterval(loadPendingUpdates, 5000); // Check every 5 seconds
+        }
 
-        // Cleanup interval on component unmount
+        // Cleanup on component unmount
         return () => {
-            clearInterval(pollInterval);
+            if (pollInterval) {
+                clearInterval(pollInterval);
+            }
             if (window.ethereum?.removeListener) {
                 window.ethereum.removeListener('accountsChanged', () => { });
             }
         };
-    }, []);
+    }, [pendingUpdates.length, result?.needsSecondSignature]); // Add dependencies to re-run effect when these change
 
     const connectWallet = async () => {
         try {
@@ -171,6 +177,9 @@ export default function AdminPage() {
 
     const signUpdate = async (merkleRoot: string) => {
         try {
+            setSigningMerkleRoot(merkleRoot);
+            setError(null);
+
             if (!web3 || !connectedAccount) {
                 throw new Error('Please connect your wallet first');
             }
@@ -206,6 +215,8 @@ export default function AdminPage() {
             }
         } catch (error) {
             setError(error instanceof Error ? error.message : 'An unknown error occurred');
+        } finally {
+            setSigningMerkleRoot(null);
         }
     };
 
@@ -261,9 +272,12 @@ export default function AdminPage() {
                                         {update.firstAdmin.toLowerCase() !== connectedAccount?.toLowerCase() ? (
                                             <button
                                                 onClick={() => signUpdate(update.merkleRoot)}
-                                                className="bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                                                disabled={signingMerkleRoot === update.merkleRoot}
+                                                className="bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50"
                                             >
-                                                Sign as Second Admin
+                                                {signingMerkleRoot === update.merkleRoot ?
+                                                    "Signing and uploading to blockchain..." :
+                                                    "Sign as Second Admin"}
                                             </button>
                                         ) : (
                                             <p className="text-yellow-300">Waiting for second admin signature</p>
