@@ -67,7 +67,7 @@ export default function SignUpPage() {
             <form onSubmit={handleSignUp} className="flex flex-col space-y-4">
               {/* Wallet Address Input */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Wallet</label>
                 <input
                   type="address"
                   value={address}
@@ -80,7 +80,7 @@ export default function SignUpPage() {
 
               {/* Username Input */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Username</label>
                 <input
                   type="username"
                   value={username}
