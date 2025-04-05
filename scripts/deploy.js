@@ -1,11 +1,23 @@
 const hre = require("hardhat");
 
 async function main() {
-  const Contract = await hre.ethers.getContractFactory("CredentialVerification");
-  const contract = await Contract.deploy();
+  // Deploy IssuerRegistry first
+  const IssuerRegistry = await hre.ethers.getContractFactory("IssuerRegistry");
+  const issuerRegistry = await IssuerRegistry.deploy();
+  await issuerRegistry.waitForDeployment();
+  console.log(`IssuerRegistry deployed to: ${issuerRegistry.target}`);
 
-  await contract.waitForDeployment();
-  console.log(`Contract deployed to: ${contract.target}`);
+  // Deploy CredentialVerification with IssuerRegistry address
+  const CredentialVerification = await hre.ethers.getContractFactory("CredentialVerification");
+  const credentialVerification = await CredentialVerification.deploy(issuerRegistry.target);
+  await credentialVerification.waitForDeployment();
+  console.log(`CredentialVerification deployed to: ${credentialVerification.target}`);
+
+  // Save the contract addresses
+  console.log({
+    issuerRegistry: issuerRegistry.target,
+    credentialVerification: credentialVerification.target
+  });
 }
 
 main().catch((error) => {

@@ -7,18 +7,64 @@ import Footer from "../../components/footer"
 import { motion } from "framer-motion"
 
 export default function SignUpPage() {
-  const [email, setEmail] = useState("")
+  const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const [address, setAddress] = useState("")
 
-  const handleSignUp = (e: React.FormEvent) => {
+  const sanitizeInput = (input: string) => {
+    //trim whitespace and remove any unwanted characters
+    const trimmedInput = input.trim(); // Remove leading and trailing whitespace
+    const sanitizedInput = trimmedInput.replace(/['"\\<>;]/g, "");
+
+    return sanitizedInput;
+  }
+
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!")
-      return
+
+    const sanitizedUsername = sanitizeInput(username);
+    const sanitizedPassword = sanitizeInput(password);
+    const sanitizedConfirmPassword = sanitizeInput(confirmPassword);
+    const sanitizedAddress = sanitizeInput(address);
+
+    if(sanitizedPassword !== sanitizedConfirmPassword) {
+      alert("Passwords do not match. Please try again.");
+      console.error("Passwords do not match");
+      return;
     }
-    console.log("Signing up with", { email, password })
-    // Add sign-up logic here (API call, Firebase, etc.)
+
+    if(sanitizedAddress.length === 42){
+      // Valid Ethereum address length (0x + 40 hex characters)
+      alert("Please enter a valid Ethereum address.");
+      console.error("Current address is of length:", sanitizedAddress.length);
+      console.error("Invalid Ethereum address length");
+      return;
+    }
+
+    console.log("Signing up with", { sanitizedUsername, sanitizedPassword })
+    const formData = new FormData();
+    formData.append("username", sanitizedUsername);
+    formData.append("password", sanitizedPassword);
+    formData.append("address", sanitizedAddress);
+
+    const response = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/create-account', {
+      method: 'POST',
+      body: formData
+    });
+    
+    const result = await response.json();
+
+    if(result.success) {
+      // Handle success (e.g., redirect to sign-in page or dashboard)
+      alert("Sign up successful! You can now sign in.");
+      window.location.href = "/Sign_In"; // Redirect to sign-in page
+    }
+    else {
+      // Handle error (e.g., show error message)
+      alert(`Sign up failed: ${result.error || "Unknown error"}`);
+      console.error("Sign up error:", result);
+    }
   }
 
   return (
@@ -43,16 +89,29 @@ export default function SignUpPage() {
             <h1 className="text-3xl font-bold mb-6 text-center">Sign Up</h1>
 
             <form onSubmit={handleSignUp} className="flex flex-col space-y-4">
-              {/* Email Input */}
+              {/* Wallet Address Input */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Wallet</label>
                 <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="text"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
                   required
                   className="w-full p-3 rounded-lg bg-slate-900 text-white focus:ring-2 focus:ring-teal-500 outline-none"
-                  placeholder="Enter your email"
+                  placeholder="Enter your Wallet Address (0x...)"
+                />
+              </div>
+
+              {/* Username Input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Username</label>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                  className="w-full p-3 rounded-lg bg-slate-900 text-white focus:ring-2 focus:ring-teal-500 outline-none"
+                  placeholder="Enter your Username"
                 />
               </div>
 
