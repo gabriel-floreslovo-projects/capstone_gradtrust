@@ -9,7 +9,7 @@ import { motion } from "framer-motion"
 export default function SignInPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const backendUrl = process.env.BACKEND_DEPLOYMENT
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
