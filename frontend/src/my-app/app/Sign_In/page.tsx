@@ -7,20 +7,20 @@ import Footer from "../../components/footer"
 import { motion } from "framer-motion"
 
 export default function SignInPage() {
-  const [email, setEmail] = useState("")
+  const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("Signing in with", { email, password })
+    console.log("Signing in with", { username, password })
 
     console.log(`${backendUrl}/api/login`)
     
     const loginRes = await fetch(`${backendUrl}/api/login`,{
       "method": "POST",
       "body": JSON.stringify({
-        username: email,
+        username: username,
         password: password
       }),
       "headers": {
@@ -60,8 +60,8 @@ export default function SignInPage() {
                 <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
                 <input
                   type="string"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                   className="w-full p-3 rounded-lg bg-slate-900 text-white focus:ring-2 focus:ring-teal-500 outline-none"
                   placeholder="Enter your email"
