@@ -22,7 +22,10 @@ export default function SignInPage() {
       "body": JSON.stringify({
         username: email,
         password: password
-      })
+      }),
+      "headers": {
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
     });
 
     const loginData = await loginRes.json();
