@@ -45,7 +45,9 @@ def login():
     try:
         username = request.form.get('username')
         password = request.form.get('password')
-        print(request.form)
+        print('yo yo yo')
+        print(request.form.get('username'))
+        print(request.form.get('password'))
         with psycopg2.connect(CONNECTION_STRING) as conn:
             # Pull the user's passhash and role to verify password input
             cursor = conn.cursor()
