@@ -43,8 +43,9 @@ def pull_credentials():
 def login():
     """Have user log in and access correct page based on their role"""
     try:
-        username = request.form.get('username')
-        password = request.form.get('password')
+        reqData = request.get_json()
+        username = reqData.get('username')
+        password = reqData.get('password')
         print('yo yo yo')
         print(request.form.get('username'))
         print(request.form.get('password'))
