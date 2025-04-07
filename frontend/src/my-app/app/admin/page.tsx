@@ -38,12 +38,6 @@ export default function AdminPage() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (pendingUpdates.length === 0) {
-            loadPendingUpdates();
-        }
-    }, [pendingUpdates]);
-
-    useEffect(() => {
         // Check if MetaMask is installed
         if (typeof window.ethereum !== 'undefined') {
             const web3Instance = new Web3(window.ethereum);
@@ -86,7 +80,6 @@ export default function AdminPage() {
                 setWeb3(web3Instance);
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 setConnectedAccount(accounts[0]);
-                // setResult({ success: true });
                 loadPendingUpdates();
             } else {
                 setError('Please install MetaMask!');
@@ -143,7 +136,7 @@ export default function AdminPage() {
 
             // Construct the message to sign
             const message = `Update Merkle Root: ${rootData.merkleRoot}`;
-            const signature = await web3.eth.personal.sign(message, connectedAccount, ""); // Add `undefined` as the third argument
+            const signature = await web3.eth.personal.sign(message, connectedAccount, "");
 
             const response = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/admin/multi-sig/update-merkle-root', {
                 method: 'POST',
@@ -178,7 +171,7 @@ export default function AdminPage() {
             }
 
             const message = `Update Merkle Root: ${merkleRoot}`;
-            const signature = await web3.eth.personal.sign(message, connectedAccount, ""); // Add `undefined` as the third argument
+            const signature = await web3.eth.personal.sign(message, connectedAccount, "");
 
             const response = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/admin/multi-sig/update-merkle-root', {
                 method: 'POST',
@@ -194,14 +187,12 @@ export default function AdminPage() {
 
             const result = await response.json();
             if (result.success) {
-                // Update the result state with the complete information
                 setResult({
                     success: true,
                     merkleRoot: result.merkleRoot,
                     transactionHash: result.transactionHash,
                     needsSecondSignature: false
                 });
-                // Reload pending updates to clear the list
                 loadPendingUpdates();
             } else {
                 throw new Error(result.error || 'Update failed');
