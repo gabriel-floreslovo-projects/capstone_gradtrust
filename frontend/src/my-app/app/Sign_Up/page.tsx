@@ -34,7 +34,7 @@ export default function SignUpPage() {
       return;
     }
 
-    if(sanitizedAddress.length === 42){
+    if(sanitizedAddress.length !== 42){
       // Valid Ethereum address length (0x + 40 hex characters)
       alert("Please enter a valid Ethereum address.");
       console.error("Current address is of length:", sanitizedAddress.length);
@@ -78,7 +78,21 @@ export default function SignUpPage() {
 
       <div className="relative z-10 flex flex-col flex-grow">
         <Navbar />
-        <main className="flex flex-col items-center justify-center flex-grow p-8 md:p-24 text-white">
+        {/* MetaMask Info Card */}
+        <div className="bg-yellow-100 text-yellow-800 p-4 rounded-lg shadow-md mx-auto max-w-2xl text-center">
+          <p>
+            This application uses MetaMask for blockchain usage, please{" "}
+            <a href="https://metamask.io/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 underline"
+              >
+                create an account here
+            </a>{" "}
+            for access to a valid wallet address.
+          </p>
+        </div>
+        <main className="flex flex-col items-center justify-center flex-grow p-1 md:p-16 text-white">
           {/* Sign Up Section */}
           <motion.section
             initial={{ opacity: 0, y: 50 }}
