@@ -55,6 +55,12 @@ export default function AdminPage() {
     };
 
     useEffect(() => {
+        if (pendingUpdates.length === 0) {
+            loadPendingUpdates();
+        }
+    }, [pendingUpdates]);
+
+    useEffect(() => {
         // Clear pending updates on page load
         clearPendingUpdatesOnLoad();
 
@@ -85,12 +91,8 @@ export default function AdminPage() {
             }
         }
 
-        // Set up polling for updates
-        const pollInterval = setInterval(loadPendingUpdates, 5000); // Check every 5 seconds
-
-        // Cleanup interval on component unmount
+        // Cleanup listener on component unmount
         return () => {
-            clearInterval(pollInterval);
             if (window.ethereum?.removeListener) {
                 window.ethereum.removeListener('accountsChanged', () => { });
             }
