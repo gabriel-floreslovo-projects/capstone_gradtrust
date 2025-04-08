@@ -46,9 +46,6 @@ def login():
         reqData = request.get_json()
         username = reqData.get('username')
         password = reqData.get('password')
-        print('yo yo yo')
-        print(request.form.get('username'))
-        print(request.form.get('password'))
         with psycopg2.connect(CONNECTION_STRING) as conn:
             # Pull the user's passhash and role to verify password input
             cursor = conn.cursor()
@@ -59,14 +56,13 @@ def login():
             if not userInfo:
                 return jsonify({"error": "This username does not exist"}), 403
             
-            print(userInfo)
             passhash = userInfo[0] # Get the passhash
             userRole = userInfo[1] # Get the role
             
             if (bcrypt.checkpw(password=password.encode('utf-8'), hashed_password=bytes.fromhex(passhash))):
                 # Create JWT token for access control
                 token = create_access_token(identity=username, additional_claims={"role": userRole})
-                response = jsonify({"message":f"you're logged in. role - {userRole}"})
+                response = jsonify({"message":f"you're logged in", "role": userRole})
                 response.set_cookie('access_token', token, httponly=True, secure=True)
                 return response, 200
             else:
