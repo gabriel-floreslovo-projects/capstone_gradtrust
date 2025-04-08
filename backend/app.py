@@ -1,46 +1,47 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from backend.routes import blueprints
+from flask_jwt_extended import JWTManager
 import os
 import dotenv
 from backend.models import db
+from backend.config import JWT_SECRET_KEY, SECRET_KEY
 
 dotenv.load_dotenv()
 CONNECTION_STRING = os.getenv('CONNECTION_STRING')
-
+FRONTEND_ORIGIN = os.getenv('FRONTEND_ORIGIN')
+BACKEND_DEPLOYMENT = os.getenv('BACKEND_DEPLOYMENT')
 
 def create_app():
     app = Flask(__name__, template_folder="../frontend/")
-    
-    # Configure CORS with more permissive settings
-    CORS(app, 
-        resources={r"/*": {
-            "origins": ["https://gradtrust-frontend-0200dc93e280.herokuapp.com"],
-            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            "allow_headers": ["Content-Type", "Authorization"],
-            "supports_credentials": True
-        }})
-
+    CORS(app, supports_credentials=True, origins=[FRONTEND_ORIGIN, BACKEND_DEPLOYMENT], methods=['GET','POST','DELETE','OPTIONS'],
+        allow_headers=['Content-Type', 'Authorization'])
+    JWTManager(app)
 
     app.config["SQLALCHEMY_DATABASE_URI"] = CONNECTION_STRING
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    # Not sure why I had to enable jwt stuff with app.config (I thought that was what config file was for), but here we are
+    app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
+    app.config["SECRET_KEY"] = SECRET_KEY
+    app.config["JWT_TOKEN_LOCATION"] = ["headers", "cookies"]
+    app.config["JWT_ACCESS_COOKIE_NAME"] = "access_token"
 
     db.init_app(app)
     
     # Register all blueprints
     for blueprint in blueprints:
         app.register_blueprint(blueprint)
+
+    # @app.route("/")
+    # def hello():
+    #     return jsonify({"msg": "backend is running"}), 200
     
     '''
     FRONTEND IS SERVING THE PAGES, 
     SO WE ARE NOT USING FLASK'S RENDER_TEMPLATE
     FOR THESE ROUTES ANYMORE
     '''
-
-    # @app.route("/")
-    # def index():
-    #     return render_template("index.html")
 
     # @app.route("/admin")
     # def admin():

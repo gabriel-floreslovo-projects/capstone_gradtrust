@@ -26,6 +26,7 @@ eth-utils
 eth_abi
 Flask
 flask-cors
+Flask-JWT-Extended
 Flask-SQLAlchemy
 frozenlist
 greenlet
