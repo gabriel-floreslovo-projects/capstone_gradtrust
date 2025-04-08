@@ -36,6 +36,7 @@ export default function AdminPage() {
     const [updating, setUpdating] = useState(false);
     const [result, setResult] = useState<UpdateResult | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [isSigningSecondAdmin, setIsSigningSecondAdmin] = useState(false);
 
     useEffect(() => {
         // Check if MetaMask is installed
@@ -165,6 +166,9 @@ export default function AdminPage() {
     };
 
     const signUpdate = async (merkleRoot: string) => {
+        setIsSigningSecondAdmin(true);
+        setError(null);
+        setResult(null);
         try {
             if (!web3 || !connectedAccount) {
                 throw new Error('Please connect your wallet first');
@@ -199,6 +203,8 @@ export default function AdminPage() {
             }
         } catch (error) {
             setError(error instanceof Error ? error.message : 'An unknown error occurred');
+        } finally {
+            setIsSigningSecondAdmin(false);
         }
     };
 
@@ -266,8 +272,21 @@ export default function AdminPage() {
                             </div>
                         )}
 
+                        {isSigningSecondAdmin && (
+                            <div className="mt-6 p-4 bg-blue-600/20 border border-blue-500 text-blue-300 rounded-lg shadow-md">
+                                <p>⏳ Waiting for successful transaction receipt...</p>
+                            </div>
+                        )}
+
                         {result && (
-                            <div className="mt-6 p-6 bg-green-600/20 border border-green-500 text-green-300 rounded-lg shadow-md">
+                            <div className="relative mt-6 p-6 bg-green-600/20 border border-green-500 text-green-300 rounded-lg shadow-md">
+                                <button
+                                    onClick={() => setResult(null)}
+                                    className="absolute top-2 right-2 text-green-300 hover:text-white text-2xl font-bold"
+                                    aria-label="Close notification"
+                                >
+                                    &times;
+                                </button>
                                 {result.needsSecondSignature ? (
                                     <h3 className="text-2xl font-semibold mb-2">First signature recorded. Waiting for second admin signature.</h3>
                                 ) : (
