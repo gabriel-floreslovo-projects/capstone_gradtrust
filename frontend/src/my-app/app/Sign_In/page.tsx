@@ -5,32 +5,62 @@ import Link from "next/link"
 import Navbar from "../../components/navbar"
 import Footer from "../../components/footer"
 import { motion } from "framer-motion"
+import { useRouter } from "next/navigation"
 
 export default function SignInPage() {
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND;
+
+  const router = useRouter();
 
   const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Signing in with", { username, password })
-
-    console.log(`${backendUrl}/api/login`)
+    e.preventDefault();
+    console.log("Signing in with", { username, password });
     
-    const loginRes = await fetch(`${backendUrl}/api/login`,{
-      "method": "POST",
-      "body": JSON.stringify({
-        username: username,
-        password: password
-      }),
-      "headers": {
-        "Content-Type": "application/json"
+    try {
+      const loginRes = await fetch(`${backendUrl}/api/login`,{
+        "method": "POST",
+        "body": JSON.stringify({
+          username: username,
+          password: password
+        }),
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "credentials": "include"
+      });
+
+      
+
+      if (loginRes.ok) {
+        const loginData = await loginRes.json();
+
+        console.log(loginData);
+        const userRole = loginData.role;
+        
+        if (userRole === "A") { // Admin
+          router.push("/admin")
+        }
+        else if (userRole === "I") { // Issuer
+          router.push("/issuer")
+        }
+        else if (userRole === "V") { // Verifier 
+          router.push("/verifier")
+        }
+        else { // Holder
+          router.push("/holder")
+        }
       }
-    });
-
-    const loginData = await loginRes.json();
-
-    console.log(loginData);
+      else {
+        const loginData = await loginRes.json();
+        alert(loginData);
+      }
+    } 
+    catch (err) {
+      console.error(`Error during login: ${err}`)
+      alert("There was a problem during your login.")
+    }
   }
 
   return (
