@@ -6,6 +6,8 @@ from eth_account import Account
 from backend.classes.issue_verification import IssuerVerification
 from backend.config import w3, issuer_registry, PRIVATE_KEY
 
+last_update = None
+
 # Store temporary signatures in memory
 pending_root_updates = {}
 
@@ -115,6 +117,12 @@ def update_merkle_root_multi():
                 # Clear the pending update after successful transaction
                 del pending_root_updates[new_root]
 
+                global last_update
+                last_update = {
+                    'merkleRoot': new_root,
+                    'transactionHash': receipt.transactionHash.hex()
+                }
+
                 return jsonify({
                     'success': True,
                     'message': 'Merkle root updated successfully',
@@ -145,4 +153,22 @@ def get_pending_updates():
         })
     except Exception as e:
         print(f"Error in get_pending_updates: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+    
+@admin_bp.route('/multi-sig/last-update', methods=['GET'])
+def get_last_update():
+    """Get the last updated Merkle root"""
+    try:
+        if last_update:
+            return jsonify({
+                'success': True,
+                'lastUpdate': last_update
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'No updates have been made yet'
+            }), 404
+    except Exception as e:
+        print(f"Error in get_last_update: {str(e)}")
         return jsonify({'error': str(e)}), 500
