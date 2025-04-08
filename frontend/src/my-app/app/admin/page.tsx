@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Navbar from "../../components/navbar";
 import Footer from "../../components/footer";
 import Web3 from "web3";
+import { connected } from "process";
 
 declare global {
     interface Window {
@@ -73,6 +74,38 @@ export default function AdminPage() {
             }
         };
     }, []);
+
+    useEffect(() => {
+        if(connectedAccount) {
+            loadPendingUpdates();
+            fetchLastUpdate();
+        }
+    }, [connectedAccount]);
+
+    const fetchLastUpdate = async () => {
+        try{
+            const response = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/admin/multi-sig/last-update');
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            if(data.success){
+                setResult({
+                    success: true,
+                    merkleRoot: data.lastUpdate.merkleRoot,
+                    transactionHash: data.lastUpdate.transactionHash,
+                    needsSecondSignature: false
+                });
+            }
+            else{
+                setResult(null);
+            }
+        } catch (error) {
+            console.error('Error fetching last update:', error);
+            setError('Error fetching last update');
+        }
+    };
 
     const connectWallet = async () => {
         try {
