@@ -76,21 +76,21 @@ export default function AdminPage() {
     }, []);
 
     useEffect(() => {
-        if(connectedAccount) {
+        if (connectedAccount) {
             loadPendingUpdates();
             fetchLastUpdate();
         }
     }, [connectedAccount]);
 
     const fetchLastUpdate = async () => {
-        try{
+        try {
             const response = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/admin/multi-sig/last-update');
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
-            if(data.success){
+            if (data.success) {
                 setResult({
                     success: true,
                     merkleRoot: data.lastUpdate.merkleRoot,
@@ -98,7 +98,7 @@ export default function AdminPage() {
                     needsSecondSignature: false
                 });
             }
-            else{
+            else {
                 setResult(null);
             }
         } catch (error) {
@@ -280,6 +280,16 @@ export default function AdminPage() {
                                 {updating ? "Signing..." : "Update Merkle Root"}
                             </button>
                         </form>
+
+                        {/* Button to manually check for updates */}
+                        {connectedAccount && (
+                            <button
+                                onClick={fetchLastUpdate}
+                                className="mt-4 mb-6 bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors w-full"
+                            >
+                                Check if other admin has signed off
+                            </button>
+                        )}
 
                         {pendingUpdates.length > 0 && (
                             <div className="mt-8">
