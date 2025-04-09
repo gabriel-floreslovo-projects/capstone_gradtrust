@@ -78,7 +78,6 @@ export default function AdminPage() {
     useEffect(() => {
         if (connectedAccount) {
             loadPendingUpdates();
-            fetchLastUpdate();
         }
     }, [connectedAccount]);
 
