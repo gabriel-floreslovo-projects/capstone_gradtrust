@@ -172,3 +172,17 @@ def get_last_update():
     except Exception as e:
         print(f"Error in get_last_update: {str(e)}")
         return jsonify({'error': str(e)}), 500
+
+@admin_bp.route('/multi-sig/clear-last-update', methods=['POST'])
+def clear_last_update():
+    """Clear the stored last successful update"""
+    global last_update
+    if last_update == None:
+        return jsonify({'success': True, 'message': 'Last update already cleared'})
+    try:
+        last_update = None
+        print("Last successful update cleared by request.")
+        return jsonify({'success': True, 'message': 'Last update cleared successfully.'})
+    except Exception as e:
+        print(f"Error in clear_last_update: {str(e)}")
+        return jsonify({'error': str(e)}), 500
