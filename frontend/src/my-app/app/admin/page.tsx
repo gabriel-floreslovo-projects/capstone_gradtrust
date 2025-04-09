@@ -324,7 +324,19 @@ export default function AdminPage() {
                         {result && (
                             <div className="relative mt-6 p-6 bg-green-600/20 border border-green-500 text-green-300 rounded-lg shadow-md">
                                 <button
-                                    onClick={() => setResult(null)}
+                                    onClick={async () => {
+                                        setResult(null); // Clear local state immediately
+                                        try {
+                                            const response = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/admin/multi-sig/clear-last-update', {
+                                                method: 'POST',
+                                            });
+                                            if (!response.ok) {
+                                                console.error('Failed to clear last update on server');
+                                            }
+                                        } catch (err) {
+                                            console.error('Error clearing last update on server:', err);
+                                        }
+                                    }}
                                     className="absolute top-2 right-2 text-green-300 hover:text-white text-2xl font-bold"
                                     aria-label="Close notification"
                                 >
