@@ -5,6 +5,7 @@ import Navbar from "../../components/navbar";
 import Footer from "../../components/footer";
 import Web3 from "web3";
 import { connected } from "process";
+import { io } from "socket.io-client";
 
 declare global {
     interface Window {
@@ -80,6 +81,26 @@ export default function AdminPage() {
             loadPendingUpdates();
         }
     }, [connectedAccount]);
+
+    useEffect(() => {
+        //connect to websocket server
+        const socket = io("https://gradtrust-459152f15ccf.herokuapp.com/")
+
+        //listen for merkle root updates
+        socket.on("merkle_root_updated", (data) => {
+            setResult({
+                success: true,
+                merkleRoot: data.merkleRoot,
+                transactionHash: data.transactionHash,
+                needsSecondSignature: false
+            });
+        });
+
+        //cleanup on component unmount
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
 
     const fetchLastUpdate = async () => {
         try {
