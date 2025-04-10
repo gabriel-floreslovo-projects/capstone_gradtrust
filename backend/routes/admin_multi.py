@@ -77,6 +77,14 @@ def update_merkle_root_multi():
                     'first_signature': signature,
                     'root_bytes': root_bytes
                 }
+
+                # Emit WebSocket event for first signature
+                socketio.emit('first_signature_received', {
+                    'merkleRoot': new_root,
+                    'firstAdmin': admin_address.lower(),
+                    'needsSecondSignature': True
+                })
+
                 return jsonify({
                     'success': True,
                     'message': 'First signature recorded. Waiting for second admin signature.',
