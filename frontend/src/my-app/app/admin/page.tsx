@@ -218,7 +218,13 @@ export default function AdminPage() {
 
             const result = await response.json();
             if (result.success) {
-                setResult(result);
+                // Update the UI to show waiting for second signature
+                setResult({
+                    success: true,
+                    merkleRoot: result.merkleRoot,
+                    needsSecondSignature: true
+                });
+                // Load pending updates to show the update in the list
                 loadPendingUpdates();
             } else {
                 throw new Error(result.error || 'Update failed');
