@@ -1,1 +1,1 @@
-web: python -m eventlet backend/app.py
+web: python backend/app.py
