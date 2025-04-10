@@ -96,6 +96,18 @@ export default function AdminPage() {
             });
         });
 
+        //listen for pending updates
+        socket.on("pending_updates", (data) => {
+            setPendingUpdates(data.pending);
+            if (data.pending.length > 0) {
+                setResult({
+                    success: true,
+                    merkleRoot: data.pending[0].merkleRoot,
+                    needsSecondSignature: true
+                });
+            }
+        });
+
         //cleanup on component unmount
         return () => {
             socket.disconnect();
