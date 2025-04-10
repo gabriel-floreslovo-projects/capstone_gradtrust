@@ -66,6 +66,6 @@ def create_app():
 if __name__ == "__main__":
     app = create_app()
     socketio.init_app(app)
-    socketio.run(app, debug=True) 
+    socketio.run(app, debug=True, port=5000) 
     #no longer using app.run() since socketio is handling the server
     #app.run(debug=True, port=5000)
