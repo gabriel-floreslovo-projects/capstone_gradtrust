@@ -70,3 +70,4 @@ websockets
 Werkzeug
 yarl
 flask-socketio
+eventlet
