@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from flask_socketio import SocketIO
 from backend.routes import blueprints
 from flask_jwt_extended import JWTManager
 import os
@@ -63,4 +64,6 @@ def create_app():
 
 if __name__ == "__main__":
     app = create_app()
+    socketio = SocketIO(app, cors_allowed_origins="*")
+    socketio.run(app, debug=True) 
     app.run(debug=True, port=5000)

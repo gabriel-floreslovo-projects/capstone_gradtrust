@@ -1,16 +1,15 @@
 from backend.routes import admin_bp
 from flask import jsonify, request
-from flask_socketio import SocketIO, emit
+from flask_socketio import emit
 from web3 import Web3
 from eth_account.messages import encode_defunct
 from eth_account import Account
 from backend.classes.issue_verification import IssuerVerification
 from backend.config import w3, issuer_registry, PRIVATE_KEY
-from backend.app import app
+from backend.app import socketio
 
 last_update = None
 
-socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Store temporary signatures in memory
 pending_root_updates = {}
@@ -192,7 +191,3 @@ def clear_last_update():
     except Exception as e:
         print(f"Error in clear_last_update: {str(e)}")
         return jsonify({'error': str(e)}), 500
-    
-#run app with SocketIO    
-if __name__ == "__main__":
-    socketio.run(app, debug=True)    
