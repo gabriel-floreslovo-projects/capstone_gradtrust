@@ -69,4 +69,3 @@ web3
 websockets
 Werkzeug
 yarl
-flask-socketio
