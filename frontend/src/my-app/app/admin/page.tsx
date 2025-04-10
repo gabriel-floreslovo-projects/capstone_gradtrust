@@ -321,15 +321,6 @@ export default function AdminPage() {
                             </button>
                         </form>
 
-                        {/* Button to manually check for updates */}
-                        {connectedAccount && (
-                            <button
-                                onClick={fetchLastUpdate}
-                                className="mt-4 mb-6 bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors w-full"
-                            >
-                                Check if other admin has signed off
-                            </button>
-                        )}
 
                         {pendingUpdates.length > 0 && (
                             <div className="mt-8">
