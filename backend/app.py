@@ -66,6 +66,9 @@ def create_app():
 if __name__ == "__main__":
     app = create_app()
     socketio.init_app(app)
-    socketio.run(app, debug=True, port=5000) 
+
+    #use the $PORT environment variable provided by Heroku
+    port = int(os.environ.get("PORT", 5000))
+    socketio.run(app, debug=True, port=port) 
     #no longer using app.run() since socketio is handling the server
     #app.run(debug=True, port=5000)
