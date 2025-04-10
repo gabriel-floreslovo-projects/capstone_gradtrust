@@ -126,6 +126,9 @@ def update_merkle_root_multi():
                     'transactionHash': receipt.transactionHash.hex()
                 }
 
+                # Notify clients about the update
+                socketio.emit('merkle_root_updated', last_update)
+
                 return jsonify({
                     'success': True,
                     'message': 'Merkle root updated successfully',
