@@ -1,12 +1,15 @@
 from backend.routes import admin_bp
 from flask import jsonify, request
+from flask_socketio import emit
 from web3 import Web3
 from eth_account.messages import encode_defunct
 from eth_account import Account
 from backend.classes.issue_verification import IssuerVerification
 from backend.config import w3, issuer_registry, PRIVATE_KEY
+from backend.socketio_instance import socketio
 
 last_update = None
+
 
 # Store temporary signatures in memory
 pending_root_updates = {}
@@ -74,6 +77,18 @@ def update_merkle_root_multi():
                     'first_signature': signature,
                     'root_bytes': root_bytes
                 }
+
+                # Emit pending updates to all clients
+                socketio.emit('pending_updates', {
+                    'pending': [
+                        {
+                            'merkleRoot': root,
+                            'firstAdmin': data['first_admin']
+                        }
+                        for root, data in pending_root_updates.items()
+                    ]
+                })
+
                 return jsonify({
                     'success': True,
                     'message': 'First signature recorded. Waiting for second admin signature.',
@@ -122,6 +137,9 @@ def update_merkle_root_multi():
                     'merkleRoot': new_root,
                     'transactionHash': receipt.transactionHash.hex()
                 }
+
+                # Notify clients about the update
+                socketio.emit('merkle_root_updated', last_update)
 
                 return jsonify({
                     'success': True,

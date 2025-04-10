@@ -1,12 +1,14 @@
 from flask import Flask, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from flask_socketio import SocketIO
 from backend.routes import blueprints
 from flask_jwt_extended import JWTManager
 import os
 import dotenv
 from backend.models import db
 from backend.config import JWT_SECRET_KEY, SECRET_KEY
+from backend.socketio_instance import socketio
 
 dotenv.load_dotenv()
 CONNECTION_STRING = os.getenv('CONNECTION_STRING')
@@ -63,4 +65,10 @@ def create_app():
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(debug=True, port=5000)
+    socketio.init_app(app)
+
+    #use the $PORT environment variable provided by Heroku
+    port = int(os.environ.get("PORT", 5000))
+    socketio.run(app, host="0.0.0.0", port=port) 
+    #no longer using app.run() since socketio is handling the server
+    #app.run(debug=True, port=5000)

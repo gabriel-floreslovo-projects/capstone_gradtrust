@@ -1,1 +1,1 @@
-web: gunicorn 'backend.app:create_app()'
+web: python backend/app.py
