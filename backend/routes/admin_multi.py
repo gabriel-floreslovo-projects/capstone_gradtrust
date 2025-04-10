@@ -6,7 +6,7 @@ from eth_account.messages import encode_defunct
 from eth_account import Account
 from backend.classes.issue_verification import IssuerVerification
 from backend.config import w3, issuer_registry, PRIVATE_KEY
-from backend.app import socketio
+from backend.socketio_instance import socketio
 
 last_update = None
 

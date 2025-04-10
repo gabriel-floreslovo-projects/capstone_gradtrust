@@ -8,6 +8,7 @@ import os
 import dotenv
 from backend.models import db
 from backend.config import JWT_SECRET_KEY, SECRET_KEY
+from backend.socketio_instance import socketio
 
 dotenv.load_dotenv()
 CONNECTION_STRING = os.getenv('CONNECTION_STRING')
@@ -64,6 +65,7 @@ def create_app():
 
 if __name__ == "__main__":
     app = create_app()
-    socketio = SocketIO(app, cors_allowed_origins="*")
+    socketio.init_app(app)
     socketio.run(app, debug=True) 
-    app.run(debug=True, port=5000)
+    #no longer using app.run() since socketio is handling the server
+    #app.run(debug=True, port=5000)
