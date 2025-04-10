@@ -78,11 +78,15 @@ def update_merkle_root_multi():
                     'root_bytes': root_bytes
                 }
 
-                # Emit WebSocket event for first signature
-                socketio.emit('first_signature_received', {
-                    'merkleRoot': new_root,
-                    'firstAdmin': admin_address.lower(),
-                    'needsSecondSignature': True
+                # Emit pending updates to all clients
+                socketio.emit('pending_updates', {
+                    'pending': [
+                        {
+                            'merkleRoot': root,
+                            'firstAdmin': data['first_admin']
+                        }
+                        for root, data in pending_root_updates.items()
+                    ]
                 })
 
                 return jsonify({
