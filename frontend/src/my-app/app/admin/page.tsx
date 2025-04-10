@@ -94,6 +94,8 @@ export default function AdminPage() {
                 transactionHash: data.transactionHash,
                 needsSecondSignature: false
             });
+            // Clear pending updates when root is updated
+            setPendingUpdates([]);
         });
 
         //listen for pending updates
