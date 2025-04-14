@@ -51,10 +51,12 @@ export default function SignInPage() {
         }
         else if (userRole === "V") { // Verifier 
           console.log("i am a verifier")
+          router.refresh()
           router.push("/verifier")
         }
         else { // Holder
           console.log("i am a holder")
+          router.refresh()
           router.push("/holder")
         }
       }
