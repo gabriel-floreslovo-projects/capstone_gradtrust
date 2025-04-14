@@ -63,7 +63,7 @@ def login():
                 # Create JWT token for access control
                 token = create_access_token(identity=username, additional_claims={"role": userRole})
                 response = jsonify({"message":f"you're logged in", "role": userRole})
-                response.set_cookie('access_token', token, httponly=True, secure=True)
+                response.set_cookie('access_token', token, httponly=True, secure=True, samesite="None")
                 return response, 200
             else:
                 return jsonify({"message":"failed login."}), 401
