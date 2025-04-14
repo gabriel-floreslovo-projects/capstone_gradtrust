@@ -33,5 +33,5 @@ export async function middleware(req:NextRequest) {
 }
 
 export const config = {
-    matcher: ['/admin/:path*', '/issuer/:path*'], // Restrict these pages
+    matcher: ['/admin', '/issuer'], // Restrict these pages
 }
