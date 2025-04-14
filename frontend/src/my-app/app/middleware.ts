@@ -31,3 +31,7 @@ export async function middleware(req:NextRequest) {
         return NextResponse.redirect(new URL('/Sign_In', req.url));
     }
 }
+
+export const config = {
+    matcher: ['/admin/:path*', '/issuer/:path*'], // Restrict these pages
+}
