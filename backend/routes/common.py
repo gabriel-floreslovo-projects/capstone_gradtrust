@@ -73,6 +73,7 @@ def login():
         print(f"There was an error during login: {e}")
         return jsonify({'error': str(e)}), 500
 
+
 @common_bp.route('/me', methods=['GET'])
 @jwt_required()
 def me():
