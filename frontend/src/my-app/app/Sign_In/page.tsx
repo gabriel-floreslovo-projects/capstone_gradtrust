@@ -48,7 +48,7 @@ export default function SignInPage() {
           router.push("/issuer")
         }
         else if (userRole === "V") { // Verifier 
-          console.log("i am a varifier")
+          console.log("i am a verifier")
           router.push("/verifier")
         }
         else { // Holder
