@@ -1,4 +1,4 @@
-export default function AboutPage() {
+export default function Unauthorized() {
     return (
       <div className="relative min-h-screen">
         {/* Background gradients */}
