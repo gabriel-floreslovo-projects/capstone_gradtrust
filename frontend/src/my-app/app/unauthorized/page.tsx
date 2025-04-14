@@ -1,5 +1,6 @@
 "use client"
 import { motion } from "framer-motion"
+import Navbar from "../../components/navbar"
 
 export default function Unauthorized() {
     return (
@@ -12,6 +13,7 @@ export default function Unauthorized() {
         </div>
 
         <div className="relative z-10">
+          <Navbar />
             <main className="flex flex-col items-center p-8 md:p-24 text-white">
             {/* Hero Section */}
             <motion.section
