@@ -23,10 +23,10 @@ export async function middleware(req:NextRequest) {
         console.log(`JWT role: ${role}. pathname: ${pathname}`);
 
         // Role based locking
-        if (pathname.startsWith('/admin') && role != "admin") {
+        if (pathname.startsWith('/admin') && role != "A") {
             return NextResponse.redirect(new URL("/unauthorized", req.url));
         }
-        if (pathname.startsWith('/issuer') && (role != "issuer")) {
+        if (pathname.startsWith('/issuer') && (role != "I")) {
             return NextResponse.redirect(new URL("/unauthorized", req.url));
         }
 
