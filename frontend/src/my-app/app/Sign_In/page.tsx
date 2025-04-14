@@ -42,6 +42,7 @@ export default function SignInPage() {
         if (userRole === "A") { // Admin
           console.log("i am an admin")
           router.push("/admin")
+          router.refresh()
         }
         else if (userRole === "I") { // Issuer
           console.log("i am an issuer")
