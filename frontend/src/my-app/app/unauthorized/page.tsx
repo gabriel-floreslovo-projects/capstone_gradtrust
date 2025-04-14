@@ -1,3 +1,6 @@
+"use client"
+import { motion } from "framer-motion"
+
 export default function Unauthorized() {
     return (
       <div className="relative min-h-screen">
@@ -7,9 +10,24 @@ export default function Unauthorized() {
           <div className="absolute right-0 top-0 h-[500px] w-[500px] bg-blue-500/10 blur-[100px]" />
           <div className="absolute bottom-0 left-0 h-[500px] w-[500px] bg-purple-500/10 blur-[100px]" />
         </div>
-  
-        <h1 className="text-4xl md:text-6xl font-bold mb-6">403: Unauthorized</h1>
-        <p className="text-lg mb-6"> You do not have the authority to access this page </p>
+
+        <div className="relative z-10">
+            <main className="flex flex-col items-center p-8 md:p-24 text-white">
+            {/* Hero Section */}
+            <motion.section
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+                className="w-full max-w-7xl mb-16"
+            >
+                <h1 className="text-4xl md:text-6xl font-bold mb-6">403: Unauthorized</h1>
+                <p className="text-xl text-gray-200 max-w-3xl">
+                You do not have the necessary permissions to access this page.
+                </p>
+            </motion.section>
+            </main>
+        </div>
       </div>
     )
   }
