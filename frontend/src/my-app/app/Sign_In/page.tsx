@@ -40,15 +40,19 @@ export default function SignInPage() {
         const userRole = loginData.role;
         
         if (userRole === "A") { // Admin
+          console.log("i am an admin")
           router.push("/admin")
         }
         else if (userRole === "I") { // Issuer
+          console.log("i am an issuer")
           router.push("/issuer")
         }
         else if (userRole === "V") { // Verifier 
+          console.log("i am a varifier")
           router.push("/verifier")
         }
         else { // Holder
+          console.log("i am a holder")
           router.push("/holder")
         }
       }
