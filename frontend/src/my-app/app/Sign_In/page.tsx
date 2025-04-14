@@ -41,10 +41,12 @@ export default function SignInPage() {
         
         if (userRole === "A") { // Admin
           console.log("i am an admin")
+          router.refresh()
           router.push("/admin")
         }
         else if (userRole === "I") { // Issuer
           console.log("i am an issuer")
+          router.refresh()
           router.push("/issuer")
         }
         else if (userRole === "V") { // Verifier 
