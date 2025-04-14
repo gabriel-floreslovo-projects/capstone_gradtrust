@@ -19,7 +19,7 @@ export default function SignInPage() {
     console.log("Signing in with", { username, password });
     
     try {
-      const loginRes = await fetch(`${backendUrl}/api/login`,{
+      const loginRes = await fetch(`/api/login`,{
         "method": "POST",
         "body": JSON.stringify({
           username: username,
@@ -42,7 +42,6 @@ export default function SignInPage() {
         if (userRole === "A") { // Admin
           console.log("i am an admin")
           router.push("/admin")
-          router.refresh()
         }
         else if (userRole === "I") { // Issuer
           console.log("i am an issuer")
