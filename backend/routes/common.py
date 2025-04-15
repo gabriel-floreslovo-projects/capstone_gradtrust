@@ -52,19 +52,24 @@ def login():
             getPassandRole = "SELECT passhash, role FROM accounts WHERE username = %s;"
             cursor.execute(getPassandRole, (username,))
             userInfo = cursor.fetchone()
-            cursor.close()
-            if not userInfo:
-                return jsonify({"error": "This username does not exist"}), 403
-            
+
+            passhash = userInfo[0] # Get the passhash
+            userRole = userInfo[1] # Get the role
+
+            #getting the wallet address via the username
             getAddress = "SELECT address FROM accounts WHERE username = %s;"
             cursor.execute(getAddress, (username,))
             address = cursor.fetchone()[0]
+
+            cursor.close()
+
+            if not userInfo:
+                return jsonify({"error": "This username does not exist"}), 403
+
             if not address:
                 # If the username does not exist, return error
                 return jsonify({"error": "This username does not exist"}), 403
             
-            passhash = userInfo[0] # Get the passhash
-            userRole = userInfo[1] # Get the role
             
             if (bcrypt.checkpw(password=password.encode('utf-8'), hashed_password=bytes.fromhex(passhash))):
                 # Create JWT token for access control
