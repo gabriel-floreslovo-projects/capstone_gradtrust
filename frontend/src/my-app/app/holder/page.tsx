@@ -1,17 +1,62 @@
 "use client"
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Navbar from "../../components/navbar";
 import Footer from "../../components/footer";
+import jwt_decode from "jwt-decode";
+import Cookies from "js-cookie";
 
-export default function AboutPage() {
-  const [showCredentials, setShowCredentials] = useState(false);
+interface Credential {
+  credentialHash: string;
+  issuer: string;
+  holder: string;
+  issuedAt: string;
+  data: string;
+}
 
-  const credentials = [
-    { id: 1, title: "Bachelor's Degree in Computer Engineering", issuer: "Texas A&M University", date: "May 2025" },
-    { id: 2, title: "Blockchain Certification", issuer: "Ethereum Academy", date: "March 2024" },
-  ];
+export default function HolderPage() {
+  const [credentials, setCredentials] = useState<Credential[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [address, setAddress] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCredentials = async () => {
+      try {
+        const token = Cookies.get("access_token");
+        if (!token) {
+          setError("No access token found. Please log in.");
+          setLoading(false);
+          return;
+        }
+        // Decode JWT to get address
+        const decoded: any = jwt_decode(token);
+        const walletAddress = decoded.address;
+        setAddress(walletAddress);
+        if (!walletAddress) {
+          setError("No wallet address found in token.");
+          setLoading(false);
+          return;
+        }
+        // Fetch credentials from backend
+        const response = await fetch(
+          `https://gradtrust-459152f15ccf.herokuapp.com/api/pull-credentials?address=${walletAddress}`
+        );
+        const data = await response.json();
+        if (data.success) {
+          setCredentials(data.credentials);
+        } else {
+          setError(data.error || "Failed to fetch credentials");
+        }
+      } catch (err) {
+        setError("Error fetching credentials");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCredentials();
+  }, []);
 
   return (
     <div className="relative min-h-screen">
@@ -31,23 +76,25 @@ export default function AboutPage() {
             <p className="text-lg text-gray-300 mb-10">
               Access and manage your verified credentials in one place.
             </p>
-            <button
-              onClick={() => setShowCredentials(!showCredentials)}
-              className="bg-teal-500 hover:bg-teal-600 text-white font-medium py-3 px-6 rounded-lg transition-colors"
-            >
-              {showCredentials ? "Hide Credentials" : "View Credentials"}
-            </button>
-
-            {/* Credentials Section */}
-            {showCredentials && (
+            {address && (
+              <p className="mb-4 text-gray-400">Wallet Address: <span className="font-mono">{address}</span></p>
+            )}
+            {loading ? (
+              <p>Loading credentials...</p>
+            ) : error ? (
+              <div className="mt-6 p-4 bg-red-600/20 border border-red-500 text-red-300 rounded-lg shadow-md">{error}</div>
+            ) : credentials.length === 0 ? (
+              <p>No credentials found for this address.</p>
+            ) : (
               <div className="mt-6 bg-gray-700/50 p-6 rounded-lg shadow-md w-full text-left">
                 <h2 className="text-2xl font-semibold mb-4">Your Credentials</h2>
                 <ul className="space-y-4">
                   {credentials.map((cred) => (
-                    <li key={cred.id} className="p-4 bg-gray-800 rounded-lg shadow">
-                      <h3 className="text-lg font-medium">{cred.title}</h3>
-                      <p className="text-gray-300">{cred.issuer}</p>
-                      <p className="text-gray-400 text-sm">{cred.date}</p>
+                    <li key={cred.credentialHash} className="p-4 bg-gray-800 rounded-lg shadow">
+                      <h3 className="text-lg font-medium">{cred.data}</h3>
+                      <p className="text-gray-300">Issuer: {cred.issuer}</p>
+                      <p className="text-gray-400 text-sm">Issued At: {cred.issuedAt}</p>
+                      <p className="text-gray-400 text-sm">Credential Hash: <span className="font-mono break-all">{cred.credentialHash}</span></p>
                     </li>
                   ))}
                 </ul>
