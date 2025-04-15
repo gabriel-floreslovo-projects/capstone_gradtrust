@@ -89,16 +89,16 @@ export default function SignInPage() {
             <h1 className="text-3xl font-bold mb-6 text-center">Sign In</h1>
 
             <form onSubmit={handleSignIn} className="flex flex-col space-y-4">
-              {/* Email Input */}
+              {/* Username Input */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Username</label>
                 <input
                   type="string"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
                   className="w-full p-3 rounded-lg bg-slate-900 text-white focus:ring-2 focus:ring-teal-500 outline-none"
-                  placeholder="Enter your email"
+                  placeholder="Enter your username"
                 />
               </div>
 
