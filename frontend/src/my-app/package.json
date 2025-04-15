@@ -46,8 +46,6 @@
     "framer-motion": "^12.4.10",
     "input-otp": "1.4.1",
     "jose": "^6.0.10",
-    "js-cookie": "^3.0.5",
-    "jwt-decode": "^4.0.0",
     "lucide-react": "^0.454.0",
     "next": "^15.2.2",
     "next-auth": "^4.24.11",
@@ -68,7 +66,6 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@types/js-cookie": "^3.0.6",
     "@types/next": "^8.0.7",
     "@types/node": "20.5.1",
     "@types/react": "^18.2.20",
