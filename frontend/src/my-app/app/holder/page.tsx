@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Navbar from "../../components/navbar";
 import Footer from "../../components/footer";
-import jwt_decode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 
 interface Credential {
@@ -31,7 +31,7 @@ export default function HolderPage() {
           return;
         }
         // Decode JWT to get address
-        const decoded: any = jwt_decode(token);
+        const decoded: any = jwtDecode(token);
         const walletAddress = decoded.address;
         setAddress(walletAddress);
         if (!walletAddress) {
