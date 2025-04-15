@@ -68,6 +68,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
     "@types/next": "^8.0.7",
     "@types/node": "20.5.1",
     "@types/react": "^18.2.20",
