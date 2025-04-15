@@ -56,12 +56,19 @@ def login():
             if not userInfo:
                 return jsonify({"error": "This username does not exist"}), 403
             
+            getAddress = "SELECT address FROM accounts WHERE username = %s;"
+            cursor.execute(getAddress, (username,))
+            address = cursor.fetchone()[0]
+            if not address:
+                # If the username does not exist, return error
+                return jsonify({"error": "This username does not exist"}), 403
+            
             passhash = userInfo[0] # Get the passhash
             userRole = userInfo[1] # Get the role
             
             if (bcrypt.checkpw(password=password.encode('utf-8'), hashed_password=bytes.fromhex(passhash))):
                 # Create JWT token for access control
-                token = create_access_token(identity=username, additional_claims={"role": userRole})
+                token = create_access_token(identity=username, additional_claims={"role": userRole, "address": address})
                 response = jsonify({"message":f"you're logged in", "role": userRole})
                 response.set_cookie('access_token', token, httponly=True, secure=True)
                 return response, 200
