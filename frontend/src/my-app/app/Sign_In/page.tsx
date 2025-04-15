@@ -45,18 +45,15 @@ export default function SignInPage() {
         }
         else if (userRole === "I") { // Issuer
           console.log("i am an issuer")
-          router.refresh()
-          router.push("/issuer")
+          window.location.href = '/admin';
         }
         else if (userRole === "V") { // Verifier 
           console.log("i am a verifier")
-          router.refresh()
-          router.push("/verifier")
+          window.location.href = '/admin';
         }
         else { // Holder
           console.log("i am a holder")
-          router.refresh()
-          router.push("/holder")
+          window.location.href = '/admin';
         }
       }
       else {
