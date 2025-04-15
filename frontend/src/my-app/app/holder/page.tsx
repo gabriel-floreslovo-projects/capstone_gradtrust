@@ -4,8 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Navbar from "../../components/navbar";
 import Footer from "../../components/footer";
-import { jwtDecode } from "jwt-decode";
-import Cookies from "js-cookie";
 
 interface Credential {
   credentialHash: string;
@@ -22,32 +20,37 @@ export default function HolderPage() {
   const [address, setAddress] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchCredentials = async () => {
+    const fetchAddressAndCredentials = async () => {
       try {
-        const token = Cookies.get("access_token");
-        if (!token) {
-          setError("No access token found. Please log in.");
+        // Fetch user info from backend (which reads JWT from HttpOnly cookie)
+        const meResponse = await fetch(
+          "https://gradtrust-459152f15ccf.herokuapp.com/api/me",
+          { credentials: "include" }
+        );
+        if (!meResponse.ok) {
+          setError("Not logged in or session expired.");
           setLoading(false);
           return;
         }
-        // Decode JWT to get address
-        const decoded: any = jwtDecode(token);
-        const walletAddress = decoded.address;
+        const meData = await meResponse.json();
+        const walletAddress = meData.address;
         setAddress(walletAddress);
+
         if (!walletAddress) {
-          setError("No wallet address found in token.");
+          setError("No wallet address found in user info.");
           setLoading(false);
           return;
         }
+
         // Fetch credentials from backend
-        const response = await fetch(
+        const credResponse = await fetch(
           `https://gradtrust-459152f15ccf.herokuapp.com/api/pull-credentials?address=${walletAddress}`
         );
-        const data = await response.json();
-        if (data.success) {
-          setCredentials(data.credentials);
+        const credData = await credResponse.json();
+        if (credData.success) {
+          setCredentials(credData.credentials);
         } else {
-          setError(data.error || "Failed to fetch credentials");
+          setError(credData.error || "Failed to fetch credentials");
         }
       } catch (err) {
         setError("Error fetching credentials");
@@ -55,7 +58,7 @@ export default function HolderPage() {
         setLoading(false);
       }
     };
-    fetchCredentials();
+    fetchAddressAndCredentials();
   }, []);
 
   return (
