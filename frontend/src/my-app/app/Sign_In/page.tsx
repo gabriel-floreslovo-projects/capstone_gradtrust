@@ -45,15 +45,15 @@ export default function SignInPage() {
         }
         else if (userRole === "I") { // Issuer
           console.log("i am an issuer")
-          window.location.href = '/admin';
+          window.location.href = '/issuer';
         }
         else if (userRole === "V") { // Verifier 
           console.log("i am a verifier")
-          window.location.href = '/admin';
+          window.location.href = '/verifier';
         }
         else { // Holder
           console.log("i am a holder")
-          window.location.href = '/admin';
+          window.location.href = '/holder';
         }
       }
       else {
