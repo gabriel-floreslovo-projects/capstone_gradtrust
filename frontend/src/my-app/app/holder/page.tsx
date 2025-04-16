@@ -25,7 +25,12 @@ export default function HolderPage() {
         // Fetch user info from backend (which reads JWT from HttpOnly cookie)
         const meResponse = await fetch(
           "https://gradtrust-459152f15ccf.herokuapp.com/api/holder-address",
-          { credentials: "include" }
+          {
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json"
+            }
+          }
         );
         console.log("Response status:", meResponse.status);
         if (!meResponse.ok) {
