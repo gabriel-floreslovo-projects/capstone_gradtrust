@@ -91,7 +91,7 @@ def login():
 def me():
     """Return details of logged in user"""
     user = get_jwt()
-    return jsonify(user)
+    return jsonify(address=user["address"])
 
 @common_bp.route('/create-account', methods=['POST'])
 def create():
