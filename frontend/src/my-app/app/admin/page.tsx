@@ -305,8 +305,16 @@ export default function AdminPage() {
                         >
                             Create Issuer
                         </Link>
-                    </section>;
-                    
+
+                        <Link
+                            href="/admin/manage-users"
+                            className="ml-4 bg-teal-500 hover:bg-teal-600 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+
+                        >
+                            Manage Users
+                        </Link>
+                    </section>
+
                     <section className="w-full max-w-3xl mb-16 text-center bg-gray-800/60 p-8 rounded-xl shadow-lg">
                         <h1 className="text-4xl md:text-6xl font-bold mb-6">Admin - Multi-Signature Merkle Root Update</h1>
 
