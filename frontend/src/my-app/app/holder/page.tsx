@@ -27,7 +27,7 @@ export default function HolderPage() {
           "https://gradtrust-459152f15ccf.herokuapp.com/api/holder-address",
           { credentials: "include" }
         );
-        console.log(meResponse);
+        console.log("Response status:", meResponse.status);
         if (!meResponse.ok) {
           setError("Not logged in or session expired.");
           setLoading(false);
