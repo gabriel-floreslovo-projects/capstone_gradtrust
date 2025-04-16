@@ -75,7 +75,7 @@ def login():
                 # Create JWT token for access control
                 token = create_access_token(identity=username, additional_claims={"role": userRole, "address": address})
                 response = jsonify({"message":f"you're logged in", "role": userRole})
-                response.set_cookie('access_token', token, httponly=True, secure=True, samesite="None", domain="https://gradtrust-459152f15ccf.herokuapp.com")
+                response.set_cookie('access_token', token, httponly=True, secure=True, samesite="None")
                 return response, 200
             else:
                 return jsonify({"message":"failed login."}), 401
@@ -91,7 +91,7 @@ def login():
 def me():
     """Return details of logged in user"""
     user = get_jwt()
-    return jsonify(address=user["address"])
+    return jsonify(address=user["address"]), 200
 
 @common_bp.route('/create-account', methods=['POST'])
 def create():
