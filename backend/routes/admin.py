@@ -127,3 +127,39 @@ def delete_account():
         print(f"There was an error while deleting an account: {e}")
         conn.rollback()
         return jsonify({"error": str(e)}), 500
+    
+@admin_bp.route('/create-issuer', methods=['POST'])
+def create_issuer():
+    """Create issuer and insert into the database"""
+    try:
+        data = request.json
+        issuer_address = data.get('address')
+        issuer_name = data.get('name')
+        signature = data.get('signature')
+
+        if not all([issuer_address, issuer_name, signature]):
+            return jsonify({'error': 'Missing required fields'}), 400
+
+        # Store in database
+        with psycopg2.connect(CONNECTION_STRING) as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    INSERT INTO issuers (id, name, signature) 
+                    VALUES (%s, %s, %s)
+                    ON CONFLICT (id) 
+                    DO UPDATE SET 
+                        name = EXCLUDED.name,
+                        signature = EXCLUDED.signature
+                    """,
+                    (issuer_address, issuer_name, signature)
+                )
+            conn.commit()
+
+        return jsonify({
+            'success': True,
+            'address': issuer_address,
+            'name': issuer_name,
+            'signature': signature
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
