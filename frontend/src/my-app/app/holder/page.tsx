@@ -26,10 +26,7 @@ export default function HolderPage() {
         const meResponse = await fetch(
           "https://gradtrust-459152f15ccf.herokuapp.com/api/holder-address",
           {
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json"
-            }
+            credentials: "include"
           }
         );
         console.log("Response status:", meResponse.status);
