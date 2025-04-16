@@ -6,6 +6,7 @@ import Footer from "../../components/footer";
 import Web3 from "web3";
 import { connected } from "process";
 import { io } from "socket.io-client";
+import Link from "next/link";
 
 declare global {
     interface Window {
@@ -292,6 +293,20 @@ export default function AdminPage() {
             <div className="relative z-10">
                 <Navbar />
                 <main className="flex flex-col items-center p-8 md:p-24 text-white">
+                    <section className="w-full max-w-3xl mb-16 text-center bg-gray-800/60 p-8 rounded-xl shadow-lg">
+                        <h1 className="text-4xl md:text-6xl font-bold mb-6">Admin Dashboard</h1>
+                        <p className="text-lg text-gray-300 mb-10">
+                        Manage the system and perform administrative tasks.
+                        </p>
+
+                        <Link
+                            href="/admin/create-issuer"
+                            className="bg-teal-500 hover:bg-teal-600 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+                        >
+                            Create Issuer
+                        </Link>
+                    </section>;
+                    
                     <section className="w-full max-w-3xl mb-16 text-center bg-gray-800/60 p-8 rounded-xl shadow-lg">
                         <h1 className="text-4xl md:text-6xl font-bold mb-6">Admin - Multi-Signature Merkle Root Update</h1>
 
