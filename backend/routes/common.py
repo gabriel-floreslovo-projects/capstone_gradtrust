@@ -90,11 +90,13 @@ def login():
 @jwt_required()
 def me():
     """Return details of logged in user"""
+    print("getting the user via the jwt")
     user = get_jwt()
+    print("returned from getting the user, hopefully printing the user now:")
     print(user)
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
-    return jsonify(address=user["address"]), 200
+    return jsonify(user), 200
 
 @common_bp.route('/create-account', methods=['POST'])
 def create():
