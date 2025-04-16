@@ -24,10 +24,10 @@ export default function HolderPage() {
       try {
         // Fetch user info from backend (which reads JWT from HttpOnly cookie)
         const meResponse = await fetch(
-          "https://gradtrust-459152f15ccf.herokuapp.com/api/holder-address",
+          "https://gradtrust-459152f15ccf.herokuapp.com/api/me",
           { credentials: "include" }
         );
-        console.log("Response status:", meResponse.status);
+        console.log(meResponse);
         if (!meResponse.ok) {
           setError("Not logged in or session expired.");
           setLoading(false);
