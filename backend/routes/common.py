@@ -49,32 +49,21 @@ def login():
         with psycopg2.connect(CONNECTION_STRING) as conn:
             # Pull the user's passhash and role to verify password input
             cursor = conn.cursor()
-            getPassandRole = "SELECT passhash, role FROM accounts WHERE username = %s;"
+            getPassandRole = "SELECT passhash, role, address FROM accounts WHERE username = %s;"
             cursor.execute(getPassandRole, (username,))
             userInfo = cursor.fetchone()
-
-            passhash = userInfo[0] # Get the passhash
-            userRole = userInfo[1] # Get the role
-
-            #getting the wallet address via the username
-            getAddress = "SELECT address FROM accounts WHERE username = %s;"
-            cursor.execute(getAddress, (username,))
-            address = cursor.fetchone()[0]
-
             cursor.close()
-
             if not userInfo:
                 return jsonify({"error": "This username does not exist"}), 403
-
-            if not address:
-                # If the username does not exist, return error
-                return jsonify({"error": "This username does not exist"}), 403
             
+            passhash = userInfo[0] # Get the passhash
+            userRole = userInfo[1] # Get the role
+            userAddress = userInfo[2] # Get the address
             
             if (bcrypt.checkpw(password=password.encode('utf-8'), hashed_password=bytes.fromhex(passhash))):
                 # Create JWT token for access control
-                token = create_access_token(identity=username, additional_claims={"role": userRole, "address": address})
-                response = jsonify({"message":f"you're logged in", "role": userRole})
+                token = create_access_token(identity=username, additional_claims={"role": userRole})
+                response = jsonify({"message":f"you're logged in", "role": userRole, "address": userAddress})
                 response.set_cookie('access_token', token, httponly=True, secure=True, samesite="None")
                 return response, 200
             else:
