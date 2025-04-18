@@ -128,6 +128,44 @@ def delete_account():
         conn.rollback()
         return jsonify({"error": str(e)}), 500
     
+@admin_bp.route('/get-accounts', methods=['GET'])
+def get_accounts():
+     """Get all user accounts from the database"""
+     try:
+         with psycopg2.connect(CONNECTION_STRING) as conn:
+             cursor = conn.cursor()
+             getAllAccounts = "SELECT * FROM accounts"
+             cursor.execute(getAllAccounts)
+             accounts = cursor.fetchall()
+             cursor.close()
+             return jsonify(accounts), 200
+     except (Exception, psycopg2.DatabaseError) as e:
+         print(f"There was an error while getting all accounts: {e}")
+         return jsonify({"error": str(e)}), 500
+ 
+@admin_bp.route('/update-account', methods=['PUT'])
+def update_account():
+     """Update user account in the database"""
+     #only want to update the user's role
+     #find the user by their address (guaranteed to be unique)
+     try:
+         with psycopg2.connect(CONNECTION_STRING) as conn:
+             cursor = conn.cursor()
+             address = request.form.get('address')
+             role = request.form.get('role')
+             if (role == "H" or role == "V" or role == "A" or role == "I"):
+                 updateAccount = "UPDATE accounts SET role=%s WHERE address=%s"
+                 cursor.execute(updateAccount, (role, address))
+                 conn.commit()
+                 cursor.close()
+                 return jsonify({"message":f"Account {address} successfully updated."}), 200
+             else:
+                 return jsonify({"message": "This role is not allowed"}), 409
+     except (Exception, psycopg2.DatabaseError) as e:
+         print(f"There was an error while updating an account: {e}")
+         conn.rollback()
+         return jsonify({"error": str(e)}), 500
+    
 @admin_bp.route('/create-issuer', methods=['POST'])
 def create_issuer():
     """Create issuer and insert into the database"""
