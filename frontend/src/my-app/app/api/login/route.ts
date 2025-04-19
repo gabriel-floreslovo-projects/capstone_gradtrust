@@ -2,7 +2,7 @@
 
 import { NextResponse } from "next/server";
 
-export async function POST(request:Request) {
+export async function POST(request: Request) {
     const { username, password } = await request.json();
     const backendUrl = process.env.BACKEND_DEPLOYMENT;
 
@@ -10,11 +10,11 @@ export async function POST(request:Request) {
         const flaskResponse = await fetch(`${backendUrl}/api/login`, {
             "method": "POST",
             "body": JSON.stringify({
-            username: username,
-            password: password
+                username: username,
+                password: password
             }),
             "headers": {
-            "Content-Type": "application/json"
+                "Content-Type": "application/json"
             },
             "credentials": "include"
         });
@@ -26,12 +26,16 @@ export async function POST(request:Request) {
 
         if (setCookie) {
             response.headers.set('Set-Cookie', setCookie);
+            response.headers.append(
+                "Set-Cookie",
+                `address=${data.address}; Path=/; Secure; SameSite=None`
+            );
         }
 
         return response;
     }
-    catch (err){
+    catch (err) {
         console.error(`Proxy login error: ${err}`);
-        return NextResponse.json({"error": err}, {status: 500});
+        return NextResponse.json({ "error": err }, { status: 500 });
     }
 }
