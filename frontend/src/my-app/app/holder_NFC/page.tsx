@@ -19,13 +19,15 @@ function HolderNFCPageContent() {
     const urlAddress = searchParams.get('address');
 
     const [credentials, setCredentials] = useState<Credential[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [address, setAddress] = useState<string>(urlAddress || "");
 
     useEffect(() => {
         if (urlAddress) {
             fetchCredentials(urlAddress);
+        } else {
+            setError("No wallet address provided");
+            setLoading(false);
         }
     }, [urlAddress]);
 
@@ -49,20 +51,6 @@ function HolderNFCPageContent() {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!address) return;
-        fetchCredentials(address);
-    };
-
-    // This would be called when NFC is scanned
-    const handleNFCCardScan = (walletAddress: string) => {
-        setAddress(walletAddress);
-        // Automatically submit the form
-        const event = new Event('submit', { bubbles: true });
-        document.querySelector('form')?.dispatchEvent(event);
-    };
-
     return (
         <div className="relative min-h-screen">
             {/* Background gradients */}
@@ -76,37 +64,18 @@ function HolderNFCPageContent() {
                 <Navbar />
                 <main className="flex flex-col items-center p-8 md:p-24 text-white">
                     <section className="w-full max-w-3xl mb-16 text-center bg-gray-800/60 p-8 rounded-xl shadow-lg">
-                        <h1 className="text-4xl md:text-6xl font-bold mb-6">NFC Verification</h1>
+                        <h1 className="text-4xl md:text-6xl font-bold mb-6">NFC Credentials</h1>
                         <p className="text-lg text-gray-300 mb-10">
-                            Enter wallet address or scan NFC card to view credentials
+                            Viewing credentials for wallet: <span className="font-mono">{urlAddress}</span>
                         </p>
 
-                        <form onSubmit={handleSubmit} className="mb-8">
-                            <div className="flex flex-col items-center space-y-4">
-                                <input
-                                    type="text"
-                                    value={address}
-                                    onChange={(e) => setAddress(e.target.value)}
-                                    placeholder="Enter wallet address"
-                                    className="w-full max-w-md p-3 rounded-lg bg-gray-700 text-white placeholder-gray-400"
-                                />
-                                <button
-                                    type="submit"
-                                    disabled={loading || !address}
-                                    className="px-8 py-4 bg-blue-600 hover:bg-blue-700 rounded-lg text-white text-lg font-medium disabled:opacity-50"
-                                >
-                                    {loading ? "Loading..." : "View Credentials"}
-                                </button>
-                            </div>
-                        </form>
-
-                        {error && (
+                        {loading ? (
+                            <p>Loading credentials...</p>
+                        ) : error ? (
                             <div className="mb-8 p-4 bg-red-600/20 border border-red-500 text-red-300 rounded-lg">
                                 {error}
                             </div>
-                        )}
-
-                        {credentials.length > 0 && (
+                        ) : credentials.length > 0 ? (
                             <div className="mt-8 bg-gray-700/50 p-6 rounded-lg shadow-md w-full text-left">
                                 <h2 className="text-2xl font-semibold mb-4">Credentials</h2>
                                 <ul className="space-y-4">
@@ -122,6 +91,8 @@ function HolderNFCPageContent() {
                                     ))}
                                 </ul>
                             </div>
+                        ) : (
+                            <p>No credentials found for this wallet address.</p>
                         )}
                     </section>
                 </main>
