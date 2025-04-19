@@ -64,7 +64,7 @@ function HolderNFCPageContent() {
                 <Navbar />
                 <main className="flex flex-col items-center p-8 md:p-24 text-white">
                     <section className="w-full max-w-3xl mb-16 text-center bg-gray-800/60 p-8 rounded-xl shadow-lg">
-                        <h1 className="text-4xl md:text-6xl font-bold mb-6">NFC Credentials</h1>
+                        <h1 className="text-4xl md:text-6xl font-bold mb-6">Credentials</h1>
                         <p className="text-lg text-gray-300 mb-10">
                             Viewing credentials for wallet: <span className="font-mono">{urlAddress}</span>
                         </p>
