@@ -17,7 +17,7 @@ BACKEND_DEPLOYMENT = os.getenv('BACKEND_DEPLOYMENT')
 
 def create_app():
     app = Flask(__name__, template_folder="../frontend/")
-    CORS(app, supports_credentials=True, origins=[FRONTEND_ORIGIN, BACKEND_DEPLOYMENT], methods=['GET','POST','DELETE','OPTIONS'],
+    CORS(app, supports_credentials=True, origins=[FRONTEND_ORIGIN, BACKEND_DEPLOYMENT], methods=['GET','POST','PUT','DELETE','OPTIONS'],
         allow_headers=['Content-Type', 'Authorization'])
     JWTManager(app)
 
