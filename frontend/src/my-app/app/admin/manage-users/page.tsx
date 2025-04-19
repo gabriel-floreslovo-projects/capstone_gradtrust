@@ -146,7 +146,7 @@ export default function ManageUsersPage() {
                     <td className="py-2 px-4">{account.username}</td>
                     <td className="py-2 px-4">
                       <select
-                        value={pendingRoleUpdates[account.address] || account.role}
+                        value={pendingRoleUpdates[account.address] ?? account.role} // Use nullish coalescing operator
                         onChange={(e) =>
                           setPendingRoleUpdates((prev) => ({
                             ...prev,
