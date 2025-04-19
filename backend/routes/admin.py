@@ -153,14 +153,15 @@ def update_account():
              cursor = conn.cursor()
              address = request.form.get('address')
              role = request.form.get('role')
-             if (role == "H" or role == "V" or role == "A" or role == "I"):
+             role = role.upper()
+             if role in ["H", "V", "A", "I"]:
                  updateAccount = "UPDATE accounts SET role=%s WHERE address=%s"
                  cursor.execute(updateAccount, (role, address))
                  conn.commit()
                  cursor.close()
                  return jsonify({"message":f"Account {address} successfully updated."}), 200
              else:
-                 return jsonify({"message": "This role is not allowed"}), 409
+                 return jsonify({"message": "This role is not allowed"}), 400
      except (Exception, psycopg2.DatabaseError) as e:
          print(f"There was an error while updating an account: {e}")
          conn.rollback()
