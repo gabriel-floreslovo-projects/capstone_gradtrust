@@ -77,9 +77,10 @@
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "typescript": "5.1.6"
-  },
-  "engines": {
-    "node": ">=16.x",
-    "npm": ">=8.x"
   }
+  //,
+  // "engines": {
+  //   "node": ">=16.x",
+  //   "npm": ">=8.x"
+  // }
 }
