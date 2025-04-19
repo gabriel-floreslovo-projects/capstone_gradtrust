@@ -151,8 +151,14 @@ def update_account():
      try:
          with psycopg2.connect(CONNECTION_STRING) as conn:
              cursor = conn.cursor()
-             address = request.form.get('address')
-             role = request.form.get('role')
+
+             data = request.json
+             address = data.get('address')
+             role = data.get('role')
+
+             if not address or not role:
+                 return jsonify({'error': 'Missing required fields'}), 400
+
              role = role.upper()
              if role in ["H", "V", "A", "I"]:
                  updateAccount = "UPDATE accounts SET role=%s WHERE address=%s"
