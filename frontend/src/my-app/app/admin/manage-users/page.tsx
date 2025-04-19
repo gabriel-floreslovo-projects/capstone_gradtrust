@@ -14,6 +14,10 @@ export default function ManageUsersPage() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [pendingRoleUpdates, setPendingRoleUpdates] = useState<{
+    [address: string]: string;
+  }>({});
+  const [pendingDelete, setPendingDelete] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAccounts();
@@ -59,6 +63,11 @@ export default function ManageUsersPage() {
       }
       const data = await response.json();
       setSuccessMessage(data.message);
+      setPendingRoleUpdates((prev) => {
+        const updated = { ...prev };
+        delete updated[address];
+        return updated;
+      });
       fetchAccounts(); // Refresh the accounts list
     } catch (error) {
       setError("Error updating role");
@@ -84,6 +93,7 @@ export default function ManageUsersPage() {
       }
       const data = await response.json();
       setSuccessMessage(data.message);
+      setPendingDelete(null);
       fetchAccounts(); // Refresh the accounts list
     } catch (error) {
       setError("Error deleting account");
@@ -136,9 +146,14 @@ export default function ManageUsersPage() {
                     <td className="py-2 px-4">{account.username}</td>
                     <td className="py-2 px-4">
                       <select
-                        value={account.role}
+                        value={
+                          pendingRoleUpdates[account.address] || account.role
+                        }
                         onChange={(e) =>
-                          updateRole(account.address, e.target.value)
+                          setPendingRoleUpdates((prev) => ({
+                            ...prev,
+                            [account.address]: e.target.value,
+                          }))
                         }
                         className="bg-gray-700 text-white p-2 rounded-lg"
                       >
@@ -147,14 +162,44 @@ export default function ManageUsersPage() {
                         <option value="A">A</option>
                         <option value="I">I</option>
                       </select>
+                      {pendingRoleUpdates[account.address] && (
+                        <button
+                          onClick={() =>
+                            updateRole(
+                              account.address,
+                              pendingRoleUpdates[account.address]
+                            )
+                          }
+                          className="ml-2 bg-teal-500 hover:bg-teal-600 text-white font-medium py-1 px-3 rounded-lg transition-colors"
+                        >
+                          Confirm
+                        </button>
+                      )}
                     </td>
                     <td className="py-2 px-4">
-                      <button
-                        onClick={() => deleteAccount(account.username)}
-                        className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-                      >
-                        Delete
-                      </button>
+                      {pendingDelete === account.username ? (
+                        <>
+                          <button
+                            onClick={() => deleteAccount(account.username)}
+                            className="bg-red-500 hover:bg-red-600 text-white font-medium py-1 px-3 rounded-lg transition-colors"
+                          >
+                            Confirm
+                          </button>
+                          <button
+                            onClick={() => setPendingDelete(null)}
+                            className="ml-2 bg-gray-500 hover:bg-gray-600 text-white font-medium py-1 px-3 rounded-lg transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => setPendingDelete(account.username)}
+                          className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                        >
+                          Delete
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
