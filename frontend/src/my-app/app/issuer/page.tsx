@@ -4,6 +4,7 @@ import { useState } from "react";
 import Navbar from "../../components/navbar";
 import Footer from "../../components/footer";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 interface IssueResult {
   success: boolean;
@@ -97,8 +98,15 @@ export default function IssuerPage() {
             transition={{ duration: 0.8 }}
             className="w-full max-w-3xl bg-slate-800/40 p-8 rounded-xl shadow-lg"
           >
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-center">Issue New Credential</h1>
-            <p className="text-lg text-gray-300 mb-6 text-center">Fill out the details below and upload a PDF.</p>
+            <div className="flex justify-between items-center mb-8">
+              <h1 className="text-4xl md:text-5xl font-bold">Issue New Credential</h1>
+              <Link href="/issuer/register">
+                <button className="bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                  Register Institution
+                </button>
+              </Link>
+            </div>
+            <p className="text-lg text-gray-300 mb-6">Fill out the details below and upload a PDF.</p>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-4 bg-white/5 p-6 rounded-2xl shadow-md backdrop-blur-md">
