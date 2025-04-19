@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Navbar from "../../components/navbar";
 import Footer from "../../components/footer";
 import { format } from 'date-fns';
@@ -14,7 +14,7 @@ interface Credential {
     data: string;
 }
 
-export default function HolderNFCPage() {
+function HolderNFCPageContent() {
     const searchParams = useSearchParams();
     const urlAddress = searchParams.get('address');
 
@@ -128,5 +128,13 @@ export default function HolderNFCPage() {
                 <Footer />
             </div>
         </div>
+    );
+}
+
+export default function HolderNFCPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <HolderNFCPageContent />
+        </Suspense>
     );
 } 
