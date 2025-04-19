@@ -146,9 +146,7 @@ export default function ManageUsersPage() {
                     <td className="py-2 px-4">{account.username}</td>
                     <td className="py-2 px-4">
                       <select
-                        value={
-                          pendingRoleUpdates[account.address] || account.role
-                        }
+                        value={pendingRoleUpdates[account.address] || account.role}
                         onChange={(e) =>
                           setPendingRoleUpdates((prev) => ({
                             ...prev,
@@ -157,18 +155,23 @@ export default function ManageUsersPage() {
                         }
                         className="bg-gray-700 text-white p-2 rounded-lg"
                       >
-                        <option value="H">H</option>
-                        <option value="V">V</option>
-                        <option value="A">A</option>
-                        <option value="I">I</option>
+                        <option value="H" disabled={account.role === "H"}>
+                          H
+                        </option>
+                        <option value="V" disabled={account.role === "V"}>
+                          V
+                        </option>
+                        <option value="A" disabled={account.role === "A"}>
+                          A
+                        </option>
+                        <option value="I" disabled={account.role === "I"}>
+                          I
+                        </option>
                       </select>
                       {pendingRoleUpdates[account.address] && (
                         <button
                           onClick={() =>
-                            updateRole(
-                              account.address,
-                              pendingRoleUpdates[account.address]
-                            )
+                            updateRole(account.address, pendingRoleUpdates[account.address])
                           }
                           className="ml-2 bg-teal-500 hover:bg-teal-600 text-white font-medium py-1 px-3 rounded-lg transition-colors"
                         >
