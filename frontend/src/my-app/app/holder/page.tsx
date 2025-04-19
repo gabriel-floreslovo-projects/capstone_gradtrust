@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Navbar from "../../components/navbar";
 import Footer from "../../components/footer";
+import Cookies from 'js-cookie';
 
 interface Credential {
   credentialHash: string;
@@ -22,26 +23,16 @@ export default function HolderPage() {
   useEffect(() => {
     const fetchAddressAndCredentials = async () => {
       try {
-        // Fetch user info from backend (which reads JWT from HttpOnly cookie)
-        const meResponse = await fetch(
-          "https://gradtrust-459152f15ccf.herokuapp.com/api/me",
-          { credentials: "include" }
-        );
-        console.log(meResponse);
-        if (!meResponse.ok) {
-          setError("Not logged in or session expired.");
-          setLoading(false);
-          return;
-        }
-        const meData = await meResponse.json();
-        const walletAddress = meData.address;
-        setAddress(walletAddress);
+        // Get address from cookie
+        const walletAddress = Cookies.get('address');
 
         if (!walletAddress) {
-          setError("No wallet address found in user info.");
+          setError("No wallet address found in cookie.");
           setLoading(false);
           return;
         }
+
+        setAddress(walletAddress);
 
         // Fetch credentials from backend
         const credResponse = await fetch(
