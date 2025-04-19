@@ -5,6 +5,7 @@ import Link from "next/link";
 import Navbar from "../../components/navbar";
 import Footer from "../../components/footer";
 import Cookies from 'js-cookie';
+import { format } from 'date-fns';
 
 interface Credential {
   credentialHash: string;
@@ -88,7 +89,9 @@ export default function HolderPage() {
                     <li key={cred.credentialHash} className="p-4 bg-gray-800 rounded-lg shadow">
                       <h3 className="text-lg font-medium">{cred.data}</h3>
                       <p className="text-gray-300">Issuer: {cred.issuer}</p>
-                      <p className="text-gray-400 text-sm">Issued At: {cred.issuedAt}</p>
+                      <p className="text-gray-400 text-sm">
+                        Issued At: {format(new Date(parseInt(cred.issuedAt) * 1000), 'MMMM d, yyyy h:mm a')}
+                      </p>
                       <p className="text-gray-400 text-sm">Credential Hash: <span className="font-mono break-all">{cred.credentialHash}</span></p>
                     </li>
                   ))}
