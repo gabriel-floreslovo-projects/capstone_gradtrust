@@ -103,14 +103,23 @@ def delete_account():
     try: 
         with psycopg2.connect(CONNECTION_STRING) as conn:   
             cursor = conn.cursor()
-            username = request.form.get('username')
+            data = request.json
+            username = data.get('username')
+
+            if not username:
+                return jsonify({'error': 'Username is required'}), 400
+            
             getUserInfo = "SELECT * FROM accounts where username=%s"
             cursor.execute(getUserInfo, (username,))
             userInfo = cursor.fetchone()
+
+            if not userInfo:
+                return jsonify({"message": "This username does not exist"}), 404
+            
             address = userInfo[0]
-            passhash = userInfo[1]
             role = userInfo[2]
-            if (role == "H" or role == "V"):
+
+            if role in ["H", "V", "I"]:
                 removeUser = "DELETE FROM accounts WHERE username=%s"
                 cursor.execute(removeUser, (username,))
                 conn.commit()
