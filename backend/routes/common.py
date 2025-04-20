@@ -117,3 +117,29 @@ def create():
         print(f"There was an error during creating an account: {e}")
         conn.rollback()
         return jsonify({"success": True, "error": str(e)}), 500
+
+@common_bp.route('/get-issuers', methods=['GET'])
+def get_issuers():
+    """Get all issuers from the database"""
+    try:
+        with psycopg2.connect(CONNECTION_STRING) as conn:
+            cursor = conn.cursor()
+            getIssuers = "SELECT * FROM issuers;"
+            cursor.execute(getIssuers)
+            issuers = cursor.fetchall()
+            cursor.close()
+        
+        formatted_issuers = []
+        for issuer in issuers:
+            formatted_issuers.append({
+                'address': issuer[0],
+                'name': issuer[1]
+            })
+        
+        return jsonify({
+            'success': True,
+            'issuers': formatted_issuers
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
