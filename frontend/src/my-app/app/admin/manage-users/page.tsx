@@ -169,7 +169,7 @@ export default function ManageUsersPage() {
                     <td className="py-2 px-4">{account.username}</td>
                     <td className="py-2 px-4">
                       <select
-                        value={pendingRoleUpdates[account.address] ?? account.role}
+                        value={pendingRoleUpdates[account.address] ?? account.role} // Use the current role or pending update
                         onChange={(e) =>
                           setPendingRoleUpdates((prev) => ({
                             ...prev,
@@ -178,18 +178,10 @@ export default function ManageUsersPage() {
                         }
                         className="bg-gray-700 text-white p-2 rounded-lg"
                       >
-                        <option value="H" disabled={account.role === "H"}>
-                          H
-                        </option>
-                        <option value="V" disabled={account.role === "V"}>
-                          V
-                        </option>
-                        <option value="A" disabled={account.role === "A"}>
-                          A
-                        </option>
-                        <option value="I" disabled={account.role === "I"}>
-                          I
-                        </option>
+                        <option value="H">H</option>
+                        <option value="V">V</option>
+                        <option value="A">A</option>
+                        <option value="I">I</option>
                       </select>
                       {pendingRoleUpdates[account.address] && (
                         <button
