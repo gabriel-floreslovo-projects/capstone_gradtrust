@@ -5,18 +5,10 @@ import Link from "next/link";
 import Navbar from "../../../components/navbar";
 import Footer from "../../../components/footer";
 import { useDropzone } from "react-dropzone";
-import { FiUploadCloud, FiCheckCircle, FiXCircle, FiFileText } from "react-icons/fi";
-import { Document, Page, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
-
-// Configure PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+import { FiUploadCloud, FiCheckCircle, FiXCircle } from "react-icons/fi";
 
 export default function VerifyDocumentPage() {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
-  const [numPages, setNumPages] = useState<number | null>(null);
   const [issuer, setIssuer] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationResult, setVerificationResult] = useState<{
@@ -31,9 +23,6 @@ export default function VerifyDocumentPage() {
       if (file.type === "application/pdf") {
         setPdfFile(file);
         setVerificationResult(null);
-        // Create object URL for preview
-        const fileUrl = URL.createObjectURL(file);
-        setPdfPreviewUrl(fileUrl);
       }
     }
   }, []);
@@ -46,10 +35,6 @@ export default function VerifyDocumentPage() {
     maxFiles: 1
   });
 
-  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
-    setNumPages(numPages);
-  };
-
   const handleVerify = async () => {
     if (!pdfFile || !issuer) {
       alert("Please upload a PDF and select an issuer");
@@ -60,6 +45,11 @@ export default function VerifyDocumentPage() {
     setVerificationResult(null);
 
     try {
+      // In a real implementation, you would:
+      // 1. Hash the PDF content
+      // 2. Send to your backend to check against the blockchain
+      // 3. Compare with issuer's records
+
       // Mock verification process
       await new Promise(resolve => setTimeout(resolve, 2000));
       
@@ -94,14 +84,8 @@ export default function VerifyDocumentPage() {
 
   const resetForm = () => {
     setPdfFile(null);
-    setPdfPreviewUrl(null);
-    setNumPages(null);
     setIssuer("");
     setVerificationResult(null);
-    // Clean up object URL
-    if (pdfPreviewUrl) {
-      URL.revokeObjectURL(pdfPreviewUrl);
-    }
   };
 
   return (
@@ -124,68 +108,27 @@ export default function VerifyDocumentPage() {
 
             <div className="space-y-8">
               {/* Drag and drop area */}
-              {!pdfPreviewUrl ? (
-                <div 
-                  {...getRootProps()} 
-                  className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-colors ${
-                    isDragActive ? "border-blue-500 bg-blue-500/10" : "border-gray-600 hover:border-gray-500"
-                  }`}
-                >
-                  <input {...getInputProps()} />
-                  <div className="flex flex-col items-center justify-center space-y-4">
-                    <FiUploadCloud className="text-4xl text-gray-400" />
-                    {isDragActive ? (
-                      <p className="text-lg">Drop the PDF here...</p>
-                    ) : (
-                      <>
-                        <p className="text-lg">Drag & drop your PDF here, or click to select</p>
-                        <p className="text-sm text-gray-400">Only PDF files are accepted</p>
-                      </>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div className="border-2 border-gray-600 rounded-xl p-4">
-                  <div className="flex justify-between items-center mb-4">
-                    <div className="flex items-center space-x-2">
-                      <FiFileText className="text-xl" />
-                      <span className="font-medium">{pdfFile?.name}</span>
-                    </div>
-                    <button 
-                      onClick={resetForm}
-                      className="text-gray-400 hover:text-white"
-                    >
-                      Change File
-                    </button>
-                  </div>
-                  
-                  {/* PDF Preview */}
-                  <div className="border border-gray-700 rounded-lg overflow-hidden max-h-[500px] overflow-y-auto">
-                    <Document
-                      file={pdfPreviewUrl}
-                      onLoadSuccess={onDocumentLoadSuccess}
-                      loading={<div className="p-8 text-center">Loading PDF...</div>}
-                      error={<div className="p-8 text-center text-red-400">Failed to load PDF</div>}
-                    >
-                      {Array.from(new Array(numPages), (el, index) => (
-                        <Page
-                          key={`page_${index + 1}`}
-                          pageNumber={index + 1}
-                          width={600}
-                          renderTextLayer={false}
-                          renderAnnotationLayer={false}
-                          loading={<div className="p-8 text-center">Loading page {index + 1}...</div>}
-                        />
-                      ))}
-                    </Document>
-                  </div>
-                  {numPages && (
-                    <p className="text-sm text-gray-400 mt-2">
-                      {numPages} page{numPages > 1 ? 's' : ''}
-                    </p>
+              <div 
+                {...getRootProps()} 
+                className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-colors ${
+                  isDragActive ? "border-blue-500 bg-blue-500/10" : "border-gray-600 hover:border-gray-500"
+                }`}
+              >
+                <input {...getInputProps()} />
+                <div className="flex flex-col items-center justify-center space-y-4">
+                  <FiUploadCloud className="text-4xl text-gray-400" />
+                  {pdfFile ? (
+                    <p className="text-lg">{pdfFile.name}</p>
+                  ) : isDragActive ? (
+                    <p className="text-lg">Drop the PDF here...</p>
+                  ) : (
+                    <>
+                      <p className="text-lg">Drag & drop your PDF here, or click to select</p>
+                      <p className="text-sm text-gray-400">Only PDF files are accepted</p>
+                    </>
                   )}
                 </div>
-              )}
+              </div>
 
               {/* Issuer selection */}
               <div className="space-y-2 text-left">
@@ -194,7 +137,6 @@ export default function VerifyDocumentPage() {
                   value={issuer}
                   onChange={(e) => setIssuer(e.target.value)}
                   className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  disabled={!pdfFile}
                 >
                   <option value="">Select an issuer</option>
                   <option value="university">University</option>
@@ -210,7 +152,6 @@ export default function VerifyDocumentPage() {
                 <button
                   onClick={resetForm}
                   className="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
-                  disabled={!pdfFile && !issuer}
                 >
                   Reset
                 </button>
