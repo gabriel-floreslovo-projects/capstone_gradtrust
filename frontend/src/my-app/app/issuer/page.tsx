@@ -28,6 +28,14 @@ export default function IssuerPage() {
     }
   };
 
+  const sanitizeInput = (input: string) => {
+    //trim whitespace and remove any unwanted characters
+    const trimmedInput = input.trim(); // Remove leading and trailing whitespace
+    const sanitizedInput = trimmedInput.replace(/['"\\<>;]/g, "");
+
+    return sanitizedInput;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -44,12 +52,24 @@ export default function IssuerPage() {
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       const credentialHash = '0x' + hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
+      const sanitized_issuer_name = sanitizeInput(issuerName);
+      const sanitized_issuer_address = sanitizeInput(issuerAddress);
+      const sanitized_holder_address = sanitizeInput(holderAddress);
+
+      if (sanitized_issuer_address.length !== 42 && sanitized_holder_address.length !== 42) {
+        // Valid Ethereum address length (0x + 40 hex characters)
+        alert("Please enter a valid Ethereum address.");
+        console.error("Current issuer address is of length:", sanitized_issuer_address.length);
+        console.error("Current holder address is of length:", sanitized_holder_address.length);
+        console.error("Invalid Ethereum address length");
+        return;
+      }
       // Prepare form data
       const formData = new FormData();
       formData.append('credentialHash', credentialHash);
-      formData.append('holderAddress', holderAddress);
-      formData.append('issuerAddress', issuerAddress);
-      formData.append('issuerName', issuerName);
+      formData.append('holderAddress', sanitized_holder_address);
+      formData.append('issuerAddress', sanitized_issuer_address);
+      formData.append('issuerName', sanitized_issuer_name);
       formData.append('metaData', metadata);
 
       // Send to backend
