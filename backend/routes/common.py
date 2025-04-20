@@ -126,12 +126,12 @@ def get_entropy():
             return jsonify({"error": "Missing address argument"}), 400
         with psycopg2.connect(CONNECTION_STRING) as conn:
             cursor = conn.cursor()
-            doesAddressExist = "SELECT EXISTS(SELECT 1 FROM issuers WHERE address=%s)"
+            doesAddressExist = "SELECT EXISTS(SELECT 1 FROM issuers WHERE id=%s)"
             cursor.execute(doesAddressExist, (address,))
             if  not doesAddressExist:
                 return jsonify({"error": "This address does not exist in the issuers table"}), 404
                 
-            getEntropyQuery = "SELECT entropy FROM issuers WHERE address=%s;"
+            getEntropyQuery = "SELECT entropy FROM issuers WHERE id=%s;"
             cursor.execute(getEntropyQuery, (address,))
             entropyResponse = cursor.fetchone()
             entropy = entropyResponse[0]
