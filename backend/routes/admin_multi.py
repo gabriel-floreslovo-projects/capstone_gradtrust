@@ -14,10 +14,15 @@ last_update = None
 # Store temporary signatures in memory
 pending_root_updates = {}
 
+
+# List of admin addresses (lowercase for consistency)
 ADMIN_ADDRESSES = [
-    "0x9dbe33e61ca2f65118fbcaf182ac2cdd2cab4a42".lower(),  # First admin
-    "0x31B39c6F5E83FC03B7dd5A98047A3C75fD1dE487".lower() #Third admin
-    # "0x031A433BcB6c45Fa1afa9E33D9Ad60838b0970F7".lower()   # Second admin
+    "0x9dbe33e61ca2f65118fbcaf182ac2cdd2cab4a42".lower(),  #First admin (Segun)
+    "0x31B39c6F5E83FC03B7dd5A98047A3C75fD1dE487".lower(),  #Second admin (Blake)
+    "0x75D2295BF57e7058bCC7a9e7bA3B8b49785011D5".lower(),  #Third admin (Ezra)
+    "0xbe84152F91de69Aa6eff487c015AF5A817fF0CC4".lower(),  #Fourth admin (Joshua)
+    "0x910Fc2afFb437c2F8eAB18945047a123fcB57967".lower(),  #Fifth admin (Nathan)
+    "0x031A433BcB6c45Fa1afa9E33D9Ad60838b0970F7".lower()   #Sixth admin (Gabe)
 ]
 
 @admin_bp.route('/get-new-root', methods=['GET'])
