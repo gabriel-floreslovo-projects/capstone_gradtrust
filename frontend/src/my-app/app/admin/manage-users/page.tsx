@@ -12,6 +12,8 @@ interface Account {
 
 export default function ManageUsersPage() {
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [filteredAccounts, setFilteredAccounts] = useState<Account[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [pendingRoleUpdates, setPendingRoleUpdates] = useState<{
@@ -23,6 +25,16 @@ export default function ManageUsersPage() {
     fetchAccounts();
   }, []);
 
+  useEffect(() => {
+    // Filter accounts based on the search query
+    const filtered = accounts.filter(
+      (account) =>
+        account.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        account.username.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredAccounts(filtered);
+  }, [searchQuery, accounts]);
+
   const fetchAccounts = async () => {
     try {
       const response = await fetch(
@@ -32,13 +44,13 @@ export default function ManageUsersPage() {
         throw new Error("Failed to fetch accounts");
       }
       const data = await response.json();
-      setAccounts(
-        data.map((account: any) => ({
-          address: account[0],
-          username: account[1],
-          role: account[2],
-        }))
-      );
+      const formattedAccounts = data.map((account: any) => ({
+        address: account[0],
+        username: account[1],
+        role: account[2],
+      }));
+      setAccounts(formattedAccounts);
+      setFilteredAccounts(formattedAccounts); // Initialize filtered accounts
     } catch (error) {
       setError("Error fetching accounts");
     }
@@ -130,6 +142,17 @@ export default function ManageUsersPage() {
               </div>
             )}
 
+            {/* Search Input */}
+            <div className="mb-6">
+              <input
+                type="text"
+                placeholder="Search by address or username"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full p-3 rounded-lg bg-gray-700 text-white placeholder-gray-400"
+              />
+            </div>
+
             <table className="w-full text-left text-gray-300">
               <thead>
                 <tr>
@@ -140,13 +163,13 @@ export default function ManageUsersPage() {
                 </tr>
               </thead>
               <tbody>
-                {accounts.map((account) => (
+                {filteredAccounts.map((account) => (
                   <tr key={account.address} className="border-t border-gray-700">
                     <td className="py-2 px-4">{account.address}</td>
                     <td className="py-2 px-4">{account.username}</td>
                     <td className="py-2 px-4">
                       <select
-                        value={pendingRoleUpdates[account.address] ?? account.role} // Use nullish coalescing operator
+                        value={pendingRoleUpdates[account.address] ?? account.role}
                         onChange={(e) =>
                           setPendingRoleUpdates((prev) => ({
                             ...prev,
