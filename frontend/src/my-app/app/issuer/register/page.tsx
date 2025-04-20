@@ -12,6 +12,8 @@ interface StatusMessage {
     type: 'success' | 'danger';
 }
 
+const backendUrl = process.env.NEXT_PUBLIC_BACKEND;
+
 export default function RegisterIssuer() {
     const [web3, setWeb3] = useState<Web3 | null>(null);
     const [connectedAccount, setConnectedAccount] = useState<string | null>(null);
@@ -61,10 +63,16 @@ export default function RegisterIssuer() {
         }
 
         try {
+            const entropyResponse = await fetch(`https://safe-cicada-neatly.ngrok-free.app/entropy`, {
+                method: 'GET'
+            });
+            const entropyData = await entropyResponse.json();
+            const entropy = entropyData.entropy;
+
             const message = `${connectedAccount},${issuerName}`;
             const signature = await web3.eth.personal.sign(message, connectedAccount, '');
 
-            const response = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/issuer/register', {
+            const response = await fetch(`${backendUrl}/api/issuer/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -72,7 +80,8 @@ export default function RegisterIssuer() {
                 body: JSON.stringify({
                     address: connectedAccount,
                     name: issuerName,
-                    signature: signature
+                    signature: signature,
+                    entropy: entropy
                 }),
             });
 
