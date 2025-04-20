@@ -116,4 +116,29 @@ def create():
     except (Exception, psycopg2.DatabaseError) as e:
         print(f"There was an error during creating an account: {e}")
         conn.rollback()
-        return jsonify({"success": True, "error": str(e)}), 500
+        return jsonify({"error": str(e)}), 500
+    
+@common_bp.route('/get-entropy', methods=['GET'])
+def get_entropy():
+    try:
+        address = request.args.get('address')
+        if not address:
+            return jsonify({"error": "Missing address argument"}), 400
+        with psycopg2.connect(CONNECTION_STRING) as conn:
+            cursor = conn.cursor()
+            doesAddressExist = "SELECT EXISTS(SELECT 1 FROM issuers WHERE address=%s)"
+            cursor.execute(doesAddressExist, (address,))
+            if  not doesAddressExist:
+                return jsonify({"error": "This address does not exist in the issuers table"}), 404
+                
+            getEntropyQuery = "SELECT entropy FROM issuers WHERE address=%s;"
+            cursor.execute(getEntropyQuery, (address,))
+            entropyResponse = cursor.fetchone()
+            entropy = entropyResponse[0]
+
+            return jsonify({'entropy': entropy}), 200
+
+    except Exception as e:
+        print(f"There was an error while trying to pull entropy from DB")
+        conn.rollback()
+        return jsonify({"error": str(e)}), 500
