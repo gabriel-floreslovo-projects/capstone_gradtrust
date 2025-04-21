@@ -42,7 +42,7 @@ export default function IssuerPage() {
 
       // Get the issuer's entropy value to add to the hash
       const encoder = new TextEncoder();
-      const issuerEntropyUrl = `${backendUrl}/api/get-entropy`+ new URLSearchParams({
+      const issuerEntropyUrl = `${backendUrl}/api/get-entropy?`+ new URLSearchParams({
         address: issuerAddress
       }).toString();
       const issuerEntropyRes = await fetch(issuerEntropyUrl, {
