@@ -66,7 +66,7 @@ export default function RegisterIssuer() {
             const issuerEntropyResponse = await fetch('https://safe-cicada-neatly.ngrok-free.app/entropy', {
                 method: 'GET',
                 headers: {
-                    'ngrok-skip-browser-warning': "True",
+                    'ngrok-skip-browser-warning': 'True',
                 },
             });
 
