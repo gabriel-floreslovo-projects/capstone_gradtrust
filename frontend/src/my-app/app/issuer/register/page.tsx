@@ -63,15 +63,15 @@ export default function RegisterIssuer() {
         }
 
         try {
-            // const message = `${connectedAccount},${issuerName}`;
-            // const signature = await web3.eth.personal.sign(message, connectedAccount, '');
+            const message = `${connectedAccount},${issuerName}`;
+            const signature = await web3.eth.personal.sign(message, connectedAccount, '');
             // const issuerEntropyResponse = await fetch('https://safe-cicada-neatly.ngrok-free.app/entropy', {
             //     method: 'GET',
             //     headers: {
             //         'ngrok-skip-browser-warning': 'True',
             //     },
             // });
-// 
+
             // const issuerEntropy = await issuerEntropyResponse.json();
 
 
