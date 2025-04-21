@@ -76,28 +76,40 @@ export default function VerifyDocumentPage() {
       // 2. Send to your backend to check against the blockchain
       // 3. Compare with issuer's records
 
-      // Mock verification process
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // // Mock verification process
+      // await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Random success/failure for demo purposes
-      const isVerified = Math.random() > 0.3;
+      // // Random success/failure for demo purposes
+      // const isVerified = Math.random() > 0.3;
       
-      if (isVerified) {
-        setVerificationResult({
-          success: true,
-          message: "Document successfully verified on the blockchain!",
-          credentialData: {
-            selectedIssuer,
-            verifiedAt: new Date().toISOString(),
-            documentHash: "0x123...abc" // Mock hash
-          }
-        });
-      } else {
-        setVerificationResult({
-          success: false,
-          message: "Document not found on the blockchain or issuer mismatch."
-        });
-      }
+      // if (isVerified) {
+      //   setVerificationResult({
+      //     success: true,
+      //     message: "Document successfully verified on the blockchain!",
+      //     credentialData: {
+      //       selectedIssuer,
+      //       verifiedAt: new Date().toISOString(),
+      //       documentHash: "0x123...abc" // Mock hash
+      //     }
+      //   });
+      // } else {
+      //   setVerificationResult({
+      //     success: false,
+      //     message: "Document not found on the blockchain or issuer mismatch."
+      //   });
+      // }
+      const issuerEntropyUrl = `${backendUrl}/api/get-entropy`+ new URLSearchParams({
+        address: selectedIssuer.value
+      }).toString();
+      const issuerEntropyRes = await fetch(issuerEntropyUrl,
+        {
+          method: "GET"
+        }
+      );
+      const issuerEntropyData = await issuerEntropyRes.json();
+
+      
+
     } catch (error) {
       setVerificationResult({
         success: false,
