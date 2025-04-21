@@ -165,6 +165,9 @@ def get_entropy():
             entropyResponse = cursor.fetchone()
             entropy = entropyResponse[0]
 
+            if not entropy:
+                return jsonify({"error": "This issuer has no entropy value"}), 404
+
             return jsonify({'entropy': entropy}), 200
 
     except Exception as e:
