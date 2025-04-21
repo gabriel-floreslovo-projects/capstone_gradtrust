@@ -149,7 +149,7 @@ def get_issuers():
 def get_entropy():
     try:
         address = request.args.get('address')
-        # address = address.lower()
+        address = address.lower()
         if not address:
             return jsonify({"error": "Missing address argument"}), 400
         with psycopg2.connect(CONNECTION_STRING) as conn:
