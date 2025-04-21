@@ -1,21 +1,47 @@
 "use client"
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import Navbar from "../../../components/navbar";
 import Footer from "../../../components/footer";
 import { useDropzone } from "react-dropzone";
 import { FiUploadCloud, FiCheckCircle, FiXCircle } from "react-icons/fi";
+import SearchableDropdown from "@/components/searchable-dropdown";
+
+type OptionType = { 
+  label: string, 
+  value: string
+};
+
+const backendUrl = process.env.NEXT_PUBLIC_BACKEND;
 
 export default function VerifyDocumentPage() {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const [issuer, setIssuer] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationResult, setVerificationResult] = useState<{
     success: boolean;
     message: string;
     credentialData?: any;
   } | null>(null);
+  const [issuers, setIssuers] = useState<OptionType[]>([]);
+  const [selectedIssuer, setSelectedIssuer] = useState<OptionType | null>(null);
+
+  useEffect(() => {
+    const fetchIssuers = async() => {
+      const issuersRes = await fetch(`${backendUrl}/api/get-issuers`,{
+        method: "GET"
+      });
+      const issuersData = await issuersRes.json();
+      const mappedIssuers = issuersData.map((item: any) => ({
+        label: item.name,
+        value: item.address
+      }));
+
+      setIssuers(mappedIssuers);
+    }
+
+    fetchIssuers();
+  }, []); 
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -36,7 +62,7 @@ export default function VerifyDocumentPage() {
   });
 
   const handleVerify = async () => {
-    if (!pdfFile || !issuer) {
+    if (!pdfFile || !selectedIssuer) {
       alert("Please upload a PDF and select an issuer");
       return;
     }
@@ -61,7 +87,7 @@ export default function VerifyDocumentPage() {
           success: true,
           message: "Document successfully verified on the blockchain!",
           credentialData: {
-            issuer,
+            selectedIssuer,
             verifiedAt: new Date().toISOString(),
             documentHash: "0x123...abc" // Mock hash
           }
@@ -84,7 +110,7 @@ export default function VerifyDocumentPage() {
 
   const resetForm = () => {
     setPdfFile(null);
-    setIssuer("");
+    setSelectedIssuer(null);
     setVerificationResult(null);
   };
 
@@ -132,19 +158,7 @@ export default function VerifyDocumentPage() {
 
               {/* Issuer selection */}
               <div className="space-y-2 text-left">
-                <label className="block text-gray-300 mb-2">Where did you get this document certified?</label>
-                <select
-                  value={issuer}
-                  onChange={(e) => setIssuer(e.target.value)}
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select an issuer</option>
-                  <option value="university">University</option>
-                  <option value="government">Government Agency</option>
-                  <option value="professional">Professional Certification Body</option>
-                  <option value="employer">Previous Employer</option>
-                  <option value="other">Other Organization</option>
-                </select>
+                <SearchableDropdown options={issuers} onChange={setSelectedIssuer}/>
               </div>
 
               {/* Action buttons */}
@@ -157,9 +171,9 @@ export default function VerifyDocumentPage() {
                 </button>
                 <button
                   onClick={handleVerify}
-                  disabled={!pdfFile || !issuer || isVerifying}
+                  disabled={!pdfFile || !selectedIssuer || isVerifying}
                   className={`px-6 py-3 rounded-lg transition-colors flex items-center justify-center ${
-                    (!pdfFile || !issuer) 
+                    (!pdfFile || !selectedIssuer) 
                       ? "bg-gray-600 cursor-not-allowed" 
                       : "bg-blue-600 hover:bg-blue-500"
                   }`}
