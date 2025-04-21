@@ -84,7 +84,7 @@ export default function RegisterIssuer() {
                     address: connectedAccount,
                     name: issuerName,
                     signature: signature,
-                    entropy: issuerEntropy
+                    entropy: issuerEntropy.entropy
                 }),
             });
 
