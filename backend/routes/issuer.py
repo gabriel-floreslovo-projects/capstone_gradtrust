@@ -16,7 +16,7 @@ def register_issuer():
     signature = data.get('signature')
     entropy = data.get('entropy')
 
-    if not all([issuer_address, issuer_name, signature]):
+    if not all([issuer_address, issuer_name, signature, entropy]):
         return jsonify({'error': 'Missing required fields'}), 400
 
     try:
