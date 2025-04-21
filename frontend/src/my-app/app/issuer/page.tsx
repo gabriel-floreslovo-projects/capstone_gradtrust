@@ -56,6 +56,12 @@ export default function IssuerPage() {
       const issuerEntropyRes = await fetch(issuerEntropyUrl, {
         method: "GET"
       });
+      if (!issuerEntropyRes.ok) {
+        const errorData = await issuerEntropyRes.json();
+        console.log(`Error fetching issuer entropy: ${issuerEntropyRes.status}: ${errorData.error}`);
+        alert(`There was an error fetching issuer entropy.`);
+        return;
+      }
       const issuerEntropyData = await issuerEntropyRes.json();
       const issuerEntropy = encoder.encode(issuerEntropyData.entropy);
       // Convert PDF to hash
