@@ -19,6 +19,11 @@ export async function POST(request: Request) {
             "credentials": "include"
         });
 
+        if (!flaskResponse.ok) {
+            const errorData = await flaskResponse.json();
+            return NextResponse.json(errorData, { status: flaskResponse.status });
+        }
+
         const data = await flaskResponse.json();
         const setCookie = flaskResponse.headers.get('set-cookie');
 
