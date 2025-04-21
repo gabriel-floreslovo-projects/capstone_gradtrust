@@ -75,6 +75,15 @@ export default function HolderPage() {
             {address && (
               <p className="mb-4 text-gray-400">Wallet Address: <span className="font-mono">{address}</span></p>
             )}
+
+            <div className="mb-6">
+              <Link href="/holder/verify">
+                <button className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200">
+                  Verify a Credential
+                </button>
+              </Link>
+            </div>
+
             {loading ? (
               <p>Loading credentials...</p>
             ) : error ? (
