@@ -49,7 +49,6 @@ export default function IssuerPage() {
         method: "GET"
       });
       const issuerEntropyData = await issuerEntropyRes.json();
-      console.log(`Issuer's entropy: ${issuerEntropyData.entropy}`);
       const issuerEntropy = encoder.encode(issuerEntropyData.entropy);
       // Convert PDF to hash
       const pdfArrayBuffer = await selectedFile.arrayBuffer();
