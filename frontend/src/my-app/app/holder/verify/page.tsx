@@ -109,7 +109,7 @@ export default function VerifyDocumentPage() {
             const credentialHash = '0x' + hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
             // Verify the credential hash on chain
-            const verifyUrl = `${backendUrl}/api/verify-credential?` + new URLSearchParams({
+            const verifyUrl = `${backendUrl}/api/verifier/verify-credential?` + new URLSearchParams({
                 hash: credentialHash
             }).toString();
             const verifyRes = await fetch(verifyUrl, {
