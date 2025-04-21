@@ -57,7 +57,7 @@ def issue_credential():
         # Get request data
         credential_hash = request.form.get('credentialHash')
         holder_address = request.form.get('holderAddress')
-        issuer_address = request.form.get('issuerAddress')
+        issuer_address = request.form.get('issuerAddress').lower()
         issuer_name = request.form.get('issuerName')
         metadata = request.form.get('metaData')
 
