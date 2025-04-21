@@ -63,6 +63,12 @@ export default function RegisterIssuer() {
         try {
             const message = `${connectedAccount},${issuerName}`;
             const signature = await web3.eth.personal.sign(message, connectedAccount, '');
+            const issuerEntropyResponse = await fetch('https://safe-cicada-neatly.ngrok-free.app/entropy');
+
+            const issuerEntropy = await issuerEntropyResponse.json();
+
+
+
 
             const response = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/issuer/register', {
                 method: 'POST',
@@ -72,7 +78,8 @@ export default function RegisterIssuer() {
                 body: JSON.stringify({
                     address: connectedAccount,
                     name: issuerName,
-                    signature: signature
+                    signature: signature,
+                    entropy: issuerEntropy
                 }),
             });
 
