@@ -36,7 +36,7 @@ export default function VerifyDocumentPage() {
 
             const mappedIssuers = issuersData.map((item: any) => ({
                 label: item.name,
-                value: item.address
+                value: item.id
             }));
             console.log('Mapped issuers:', mappedIssuers);
 
