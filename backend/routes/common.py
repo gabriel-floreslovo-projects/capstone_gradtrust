@@ -54,7 +54,7 @@ def login():
             userInfo = cursor.fetchone()
             cursor.close()
             if not userInfo:
-                return jsonify({"error": "This username does not exist"}), 403
+                return jsonify({"error": "Either password or username is incorrect"}), 403
             
             passhash = userInfo[0] # Get the passhash
             userRole = userInfo[1] # Get the role
@@ -67,7 +67,7 @@ def login():
                 response.set_cookie('access_token', token, httponly=True, secure=True, samesite="None")
                 return response, 200
             else:
-                return jsonify({"error":"Failed login; incorrect password."}), 401
+                return jsonify({"error":"Failed login either password or username is incorrect"}), 401
             
         
     except (Exception, psycopg2.DatabaseError) as e:
