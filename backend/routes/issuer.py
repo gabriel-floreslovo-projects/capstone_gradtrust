@@ -36,6 +36,7 @@ def register_issuer():
                     DO UPDATE SET 
                         name = EXCLUDED.name,
                         signature = EXCLUDED.signature
+                        entropy = EXCLUDED.entropy
                     """,
                     (issuer_address, issuer_name, signature, entropy)
                 )
