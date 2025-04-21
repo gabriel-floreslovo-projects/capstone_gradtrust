@@ -67,7 +67,7 @@ def login():
                 response.set_cookie('access_token', token, httponly=True, secure=True, samesite="None")
                 return response, 200
             else:
-                return jsonify({"message":"Failed login; incorrect password."}), 401
+                return jsonify({"error":"Failed login; incorrect password."}), 401
             
         
     except (Exception, psycopg2.DatabaseError) as e:
