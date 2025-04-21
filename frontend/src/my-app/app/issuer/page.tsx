@@ -13,6 +13,8 @@ interface IssueResult {
   credentialHash?: string;
 }
 
+const backendUrl = process.env.NEXT_PUBLIC_BACKEND;
+
 export default function IssuerPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [holderAddress, setHolderAddress] = useState("");
@@ -38,12 +40,27 @@ export default function IssuerPage() {
         throw new Error("Please fill out all fields and select a PDF file");
       }
 
+      // Get the issuer's entropy value to add to the hash
+      const encoder = new TextEncoder();
+      const issuerEntropyUrl = `${backendUrl}/api/get-entropy`+ new URLSearchParams({
+        address: issuerAddress
+      }).toString();
+      const issuerEntropyRes = await fetch(issuerEntropyUrl, {
+        method: "GET"
+      });
+      const issuerEntropyData = await issuerEntropyRes.json();
+      console.log(`Issuer's entropy: ${issuerEntropyData.entropy}`);
+      const issuerEntropy = encoder.encode(issuerEntropyData.entropy);
       // Convert PDF to hash
       const pdfArrayBuffer = await selectedFile.arrayBuffer();
-      const hashBuffer = await crypto.subtle.digest('SHA-256', pdfArrayBuffer);
+      // Combine pdf with entropy
+      const combinedBuf = new Uint8Array(pdfArrayBuffer.byteLength + issuerEntropy.byteLength);
+      combinedBuf.set(new Uint8Array(pdfArrayBuffer), 0);
+      combinedBuf.set(issuerEntropy, pdfArrayBuffer.byteLength);      
+      // Now hash
+      const hashBuffer = await crypto.subtle.digest('SHA-256', combinedBuf.buffer);
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       const credentialHash = '0x' + hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-
       // Prepare form data
       const formData = new FormData();
       formData.append('credentialHash', credentialHash);
