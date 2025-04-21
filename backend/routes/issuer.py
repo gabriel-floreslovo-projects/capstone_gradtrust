@@ -14,6 +14,7 @@ def register_issuer():
     issuer_address = data.get('address')
     issuer_name = data.get('name')
     signature = data.get('signature')
+    entropy = data.get('entropy')
 
     if not all([issuer_address, issuer_name, signature]):
         return jsonify({'error': 'Missing required fields'}), 400
@@ -29,14 +30,14 @@ def register_issuer():
         with psycopg2.connect(CONNECTION_STRING) as conn:
             with conn.cursor() as cur:
                 cur.execute("""
-                    INSERT INTO issuers (id, name, signature) 
-                    VALUES (%s, %s, %s)
+                    INSERT INTO issuers (id, name, signature, entropy) 
+                    VALUES (%s, %s, %s, %s)
                     ON CONFLICT (id) 
                     DO UPDATE SET 
                         name = EXCLUDED.name,
                         signature = EXCLUDED.signature
                     """,
-                    (issuer_address, issuer_name, signature)
+                    (issuer_address, issuer_name, signature, entropy)
                 )
             conn.commit()
 
@@ -44,7 +45,8 @@ def register_issuer():
             'success': True,
             'address': issuer_address,
             'name': issuer_name,
-            'signature': signature
+            'signature': signature,
+            'entropy': entropy
         })
 
     except Exception as e:
