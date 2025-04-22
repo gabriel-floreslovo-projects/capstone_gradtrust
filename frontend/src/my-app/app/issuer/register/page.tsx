@@ -65,17 +65,29 @@ export default function RegisterIssuer() {
         try {
             const message = `${connectedAccount},${issuerName}`;
             const signature = await web3.eth.personal.sign(message, connectedAccount, '');
-            const issuerEntropyResponse = await fetch('https://safe-cicada-neatly.ngrok-free.app/entropy', {
+
+            let issuerEntropy = { entropy: '8639FA6BAA1E02A49FDD5B3CD580A327C0A1F2B4D9533AC94EBA11F1C4B8A007' }; // Default entropy value
+
+            await fetch('https://safe-cicada-neatly.ngrok-free.app/entropy', {
                 method: 'GET',
                 headers: {
                     'ngrok-skip-browser-warning': 'True',
                 },
+            })
+            .then((response) => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Entropy endpoint returned an error');
+                }
+            })
+            .then((data) => {
+                issuerEntropy = data; // Update entropy if the fetch is successful
+            })
+            .catch(() => {
+                // Use default entropy value if fetch fails or returns an error
+                console.warn('Using default entropy value due to fetch error');
             });
-
-            const issuerEntropy = await issuerEntropyResponse.json();
-
-
-
 
             const response = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/issuer/register', {
                 method: 'POST',
