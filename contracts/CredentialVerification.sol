@@ -70,6 +70,7 @@ contract CredentialVerification {
     function storeCredential(
         bytes32 _credentialHash,
         address _holder,
+        address _issuer,
         uint256 _issuedAt,
         string calldata _data,
         bytes32[] calldata _merkleProof,
@@ -83,7 +84,7 @@ contract CredentialVerification {
 
         credentials[_credentialHash] = Credential(
             _credentialHash,
-            msg.sender,
+            _issuer,
             _holder,
             _issuedAt,
             _data
@@ -93,7 +94,7 @@ contract CredentialVerification {
 
         emit CredentialStored(
             _credentialHash,
-            msg.sender,
+            _issuer,
             _holder,
             _issuedAt,
             _data

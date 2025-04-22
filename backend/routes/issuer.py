@@ -93,6 +93,7 @@ def issue_credential():
             tx = credential_verification.functions.storeCredential(
                 credential_bytes,
                 Web3.to_checksum_address(holder_address),
+                Web3.to_checksum_address(issuer_address),
                 w3.eth.get_block('latest').timestamp,
                 issuer_name + " " + metadata,
                 proof,
