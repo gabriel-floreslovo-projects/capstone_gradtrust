@@ -172,24 +172,36 @@ ABI = [
     {
       "inputs": [
         {
-          "internalType": "bytes32",
-          "name": "_credentialHash",
-          "type": "bytes32"
-        },
-        {
-          "internalType": "address",
-          "name": "_holder",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_issuedAt",
-          "type": "uint256"
-        },
-        {
-          "internalType": "string",
-          "name": "_data",
-          "type": "string"
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "credentialHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "issuer",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "holder",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "issuedAt",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "data",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct CredentialVerification.Credential",
+          "name": "_credential",
+          "type": "tuple"
         },
         {
           "internalType": "bytes32[]",
