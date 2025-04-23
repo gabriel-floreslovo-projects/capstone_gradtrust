@@ -14,37 +14,12 @@ export default function Footer() {
         {/* Section 2 & 3 (Grid Layout) */}
         <div className="grid flex-1 grid-cols-2 sm:grid-cols-2 gap-12">
           <div className="space-y-4">
-            {/* <h3 className="text-sm font-medium">Solutions</h3>
-            <ul className="space-y-3 text-sm">
-              <li>
-                <Link href="/issuer" className="text-muted-foreground transition-colors hover:text-primary">
-                  Issuer
-                </Link>
-              </li>
-              <li>
-                <Link href="/holder" className="text-muted-foreground transition-colors hover:text-primary">
-                  Holder
-                </Link>
-              </li>
-              <li>
-                <Link href="/verifier" className="text-muted-foreground transition-colors hover:text-primary">
-                  Verifier
-                </Link>
-              </li>
-            </ul> */}
-          </div>
-          <div className="space-y-4">
             <h3 className="text-sm font-medium">Company</h3>
             <ul className="space-y-3 text-sm">
               <li>
                 <Link href="/about" className="text-muted-foreground transition-colors hover:text-primary">
                   About Us
                 </Link>
-              </li>
-              <li>
-                {/* <Link href="/careers" className="text-muted-foreground transition-colors hover:text-primary">
-                  Careers
-                </Link> */}
               </li>
             </ul>
           </div>

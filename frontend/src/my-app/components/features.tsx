@@ -10,17 +10,7 @@ const features = [
     name: "Efficient credential verification without third-party involvement",
     description: "Verifiers do not have to interact with credential issuers whatsoever",
     icon: Cloud,
-  },
-  // {
-  //   name: "Enterprise-Grade Security",
-  //   description: "State-of-the-art security measures to protect your most valuable assets.",
-  //   icon: Shield,
-  // },
-  // {
-  //   name: "High-Performance Systems",
-  //   description: "Optimized for speed and efficiency, our solutions deliver unparalleled performance.",
-  //   icon: Zap,
-  // },
+  }
 ]
 
 export default function Features() {

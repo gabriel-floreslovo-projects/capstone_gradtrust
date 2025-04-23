@@ -52,37 +52,6 @@ export default function AboutPage() {
               </div>
             </div>
           </motion.section>
-
-          {/* Contact Section */}
-          <motion.section
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            viewport={{ once: true }}
-            className="w-full max-w-7xl mb-12"
-          >
-            <h2 className="text-3xl font-bold mb-8 border-b border-teal-400 pb-2 inline-block">Get In Touch</h2>
-            <div className="bg-slate-800/30 p-8 rounded-xl">
-              <p className="text-lg mb-6">
-                We'd love to hear from you! Whether you have questions about our products, need support, or are interested
-                in joining our team, reach out to us.
-              </p>
-              <div className="flex flex-col md:flex-row gap-4">
-                <a
-                  href="mailto:contact@streamline.com"
-                  className="bg-teal-500 hover:bg-teal-600 text-white font-medium py-3 px-6 rounded-lg transition-colors text-center"
-                >
-                  Email Us
-                </a>
-                {/* <a
-                  href="#"
-                  className="bg-slate-700 hover:bg-slate-600 text-white font-medium py-3 px-6 rounded-lg transition-colors text-center"
-                >
-                  Schedule a Call
-                </a> */}
-              </div>
-            </div>
-          </motion.section>
         </main>
         <Footer />
       </div>
