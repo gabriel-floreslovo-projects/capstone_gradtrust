@@ -11,8 +11,11 @@ from backend.socketio_instance import socketio
 last_update = None
 
 
+
 # Store temporary signatures in memory
 pending_root_updates = {}
+# Store the final result of the last successful update
+last_successful_update = None
 
 
 # List of admin addresses (lowercase for consistency)
@@ -76,7 +79,11 @@ def update_merkle_root_multi():
 
             # Check if this is the first or second signature
             if new_root not in pending_root_updates:
-                # First signature
+                # First signature - reset last_successful_update
+                global last_successful_update
+                last_successful_update = None
+                
+                # Store first signature
                 pending_root_updates[new_root] = {
                     'first_admin': admin_address.lower(),
                     'first_signature': signature,
@@ -134,7 +141,13 @@ def update_merkle_root_multi():
                 # Wait for transaction receipt
                 receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
 
-                # Clear the pending update after successful transaction
+                # Store the final result first
+                last_successful_update = {
+                    'merkleRoot': new_root,
+                    'transactionHash': receipt.transactionHash.hex()
+                }
+
+                # Then clear the pending update
                 del pending_root_updates[new_root]
 
                 global last_update
@@ -160,19 +173,51 @@ def update_merkle_root_multi():
         print(f"Error in update_merkle_root_multi: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
+@admin_bp.route('/multi-sig/last_update', methods=['GET'])
+def get_last_update():
+    """Get the result of the last successful update"""
+    try:
+        if last_successful_update:
+            return jsonify({
+                'success': True,
+                'merkleRoot': last_successful_update['merkleRoot'],
+                'transactionHash': last_successful_update['transactionHash']
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'No successful updates found'
+            })
+    except Exception as e:
+        print(f"Error in get_last_update: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 @admin_bp.route('/multi-sig/pending-updates', methods=['GET'])
 def get_pending_updates():
     """Get list of pending Merkle root updates"""
     try:
+        pending = [
+            {
+                'merkleRoot': root,
+                'firstAdmin': data['first_admin']
+            }
+            for root, data in pending_root_updates.items()
+        ]
+        
+        # If there are no pending updates, include the last successful update
+        if not pending and last_successful_update:
+            return jsonify({
+                'success': True,
+                'pending': [],
+                'lastUpdate': {
+                    'merkleRoot': last_successful_update['merkleRoot'],
+                    'transactionHash': last_successful_update['transactionHash']
+                }
+            })
+            
         return jsonify({
             'success': True,
-            'pending': [
-                {
-                    'merkleRoot': root,
-                    'firstAdmin': data['first_admin']
-                }
-                for root, data in pending_root_updates.items()
-            ]
+            'pending': pending
         })
     except Exception as e:
         print(f"Error in get_pending_updates: {str(e)}")

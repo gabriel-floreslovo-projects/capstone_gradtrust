@@ -5,6 +5,8 @@ import Navbar from "../../components/navbar";
 import Footer from "../../components/footer";
 import Web3 from "web3";
 import { connected } from "process";
+import { io } from "socket.io-client";
+import Link from "next/link";
 
 declare global {
     interface Window {
@@ -80,11 +82,44 @@ export default function AdminPage() {
             loadPendingUpdates();
         }
     }, [connectedAccount]);
+  
+    useEffect(() => {
+        //connect to websocket server
+        const socket = io("https://gradtrust-459152f15ccf.herokuapp.com/")
+
+        //listen for merkle root updates
+        socket.on("merkle_root_updated", (data) => {
+            setResult({
+                success: true,
+                merkleRoot: data.merkleRoot,
+                transactionHash: data.transactionHash,
+                needsSecondSignature: false
+            });
+            // Clear pending updates when root is updated
+            setPendingUpdates([]);
+        });
+
+        //listen for pending updates
+        socket.on("pending_updates", (data) => {
+            setPendingUpdates(data.pending);
+            if (data.pending.length > 0) {
+                setResult({
+                    success: true,
+                    merkleRoot: data.pending[0].merkleRoot,
+                    needsSecondSignature: true
+                });
+            }
+        });
+
+        //cleanup on component unmount
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
 
     const fetchLastUpdate = async () => {
         try {
             const response = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/admin/multi-sig/last-update');
-
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -185,7 +220,13 @@ export default function AdminPage() {
 
             const result = await response.json();
             if (result.success) {
-                setResult(result);
+                // Update the UI to show waiting for second signature
+                setResult({
+                    success: true,
+                    merkleRoot: result.merkleRoot,
+                    needsSecondSignature: true
+                });
+                // Load pending updates to show the update in the list
                 loadPendingUpdates();
             } else {
                 throw new Error(result.error || 'Update failed');
@@ -239,7 +280,7 @@ export default function AdminPage() {
             setIsSigningSecondAdmin(false);
         }
     };
-
+  
     return (
         <div className="relative min-h-screen">
             <div className="pointer-events-none fixed inset-0">
@@ -251,6 +292,29 @@ export default function AdminPage() {
             <div className="relative z-10">
                 <Navbar />
                 <main className="flex flex-col items-center p-8 md:p-24 text-white">
+                    <section className="w-full max-w-3xl mb-16 text-center bg-gray-800/60 p-8 rounded-xl shadow-lg">
+
+                        <h1 className="text-4xl md:text-6xl font-bold mb-6">Admin Dashboard</h1>
+                        <p className="text-lg text-gray-300 mb-10">
+                        Manage the system and perform administrative tasks.
+                        </p>
+
+                        <Link
+                            href="/admin/create-issuer"
+                            className="bg-teal-500 hover:bg-teal-600 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+                        >
+                            Create Issuer
+                        </Link>
+
+                        <Link
+                            href="/admin/manage-users"
+                            className="ml-4 bg-teal-500 hover:bg-teal-600 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+
+                        >
+                            Manage Users
+                        </Link>
+                    </section>
+
                     <section className="w-full max-w-3xl mb-16 text-center bg-gray-800/60 p-8 rounded-xl shadow-lg">
                         <h1 className="text-4xl md:text-6xl font-bold mb-6">Admin - Multi-Signature Merkle Root Update</h1>
 
@@ -279,16 +343,6 @@ export default function AdminPage() {
                                 {updating ? "Signing..." : "Update Merkle Root"}
                             </button>
                         </form>
-
-                        {/* Button to manually check for updates */}
-                        {connectedAccount && (
-                            <button
-                                onClick={fetchLastUpdate}
-                                className="mt-4 mb-6 bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors w-full"
-                            >
-                                Check if other admin has signed off
-                            </button>
-                        )}
 
                         {pendingUpdates.length > 0 && (
                             <div className="mt-8">

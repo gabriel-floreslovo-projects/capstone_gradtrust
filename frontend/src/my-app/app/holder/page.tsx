@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Navbar from "../../components/navbar";
 import Footer from "../../components/footer";
+import Cookies from 'js-cookie';
+import { format } from 'date-fns';
 
 interface Credential {
   credentialHash: string;
@@ -22,25 +24,16 @@ export default function HolderPage() {
   useEffect(() => {
     const fetchAddressAndCredentials = async () => {
       try {
-        // Fetch user info from backend (which reads JWT from HttpOnly cookie)
-        const meResponse = await fetch(
-          "https://gradtrust-459152f15ccf.herokuapp.com/api/me",
-          { credentials: "include" }
-        );
-        if (!meResponse.ok) {
-          setError("Not logged in or session expired.");
-          setLoading(false);
-          return;
-        }
-        const meData = await meResponse.json();
-        const walletAddress = meData.address;
-        setAddress(walletAddress);
+        // Get address from cookie
+        const walletAddress = Cookies.get('address');
 
         if (!walletAddress) {
-          setError("No wallet address found in user info.");
+          setError("No wallet address found in cookie.");
           setLoading(false);
           return;
         }
+
+        setAddress(walletAddress);
 
         // Fetch credentials from backend
         const credResponse = await fetch(
@@ -82,6 +75,15 @@ export default function HolderPage() {
             {address && (
               <p className="mb-4 text-gray-400">Wallet Address: <span className="font-mono">{address}</span></p>
             )}
+
+            <div className="mb-6">
+               <Link href="/holder/verify">
+                 <button className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200">
+                   Verify a Credential
+                 </button>
+               </Link>
+             </div>
+   
             {loading ? (
               <p>Loading credentials...</p>
             ) : error ? (
@@ -96,7 +98,9 @@ export default function HolderPage() {
                     <li key={cred.credentialHash} className="p-4 bg-gray-800 rounded-lg shadow">
                       <h3 className="text-lg font-medium">{cred.data}</h3>
                       <p className="text-gray-300">Issuer: {cred.issuer}</p>
-                      <p className="text-gray-400 text-sm">Issued At: {cred.issuedAt}</p>
+                      <p className="text-gray-400 text-sm">
+                        Issued At: {format(new Date(parseInt(cred.issuedAt) * 1000), 'MMMM d, yyyy h:mm a')}
+                      </p>
                       <p className="text-gray-400 text-sm">Credential Hash: <span className="font-mono break-all">{cred.credentialHash}</span></p>
                     </li>
                   ))}
