@@ -89,12 +89,17 @@ def issue_credential():
             nonce = w3.eth.get_transaction_count(account.address)
             gas_price = w3.eth.gas_price
 
-            # Build transaction using legacy format
-            tx = credential_verification.functions.storeCredential(
+            credentialInfo = (
                 credential_bytes,
+                Web3.to_checksum_address(issuer_address),
                 Web3.to_checksum_address(holder_address),
                 w3.eth.get_block('latest').timestamp,
-                issuer_name + " " + metadata,
+                issuer_name + " " + metadata
+            )
+
+            # Build transaction using legacy format
+            tx = credential_verification.functions.storeCredential(
+                credentialInfo,
                 proof,
                 proof_data['isLeft'],
                 leaf_hash
