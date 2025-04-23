@@ -143,7 +143,7 @@ def get_accounts():
      try:
          with psycopg2.connect(CONNECTION_STRING) as conn:
              cursor = conn.cursor()
-             getAllAccounts = "SELECT * FROM accounts"
+             getAllAccounts = "SELECT address, username, role FROM accounts"
              cursor.execute(getAllAccounts)
              accounts = cursor.fetchall()
              cursor.close()

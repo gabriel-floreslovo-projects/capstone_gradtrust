@@ -83,7 +83,7 @@ export default function HolderPage() {
                  </button>
                </Link>
              </div>
-             
+   
             {loading ? (
               <p>Loading credentials...</p>
             ) : error ? (

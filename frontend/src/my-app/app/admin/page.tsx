@@ -82,7 +82,7 @@ export default function AdminPage() {
             loadPendingUpdates();
         }
     }, [connectedAccount]);
-
+  
     useEffect(() => {
         //connect to websocket server
         const socket = io("https://gradtrust-459152f15ccf.herokuapp.com/")
@@ -120,7 +120,6 @@ export default function AdminPage() {
     const fetchLastUpdate = async () => {
         try {
             const response = await fetch('https://gradtrust-459152f15ccf.herokuapp.com/api/admin/multi-sig/last-update');
-
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -281,7 +280,7 @@ export default function AdminPage() {
             setIsSigningSecondAdmin(false);
         }
     };
-
+  
     return (
         <div className="relative min-h-screen">
             <div className="pointer-events-none fixed inset-0">
@@ -294,6 +293,7 @@ export default function AdminPage() {
                 <Navbar />
                 <main className="flex flex-col items-center p-8 md:p-24 text-white">
                     <section className="w-full max-w-3xl mb-16 text-center bg-gray-800/60 p-8 rounded-xl shadow-lg">
+
                         <h1 className="text-4xl md:text-6xl font-bold mb-6">Admin Dashboard</h1>
                         <p className="text-lg text-gray-300 mb-10">
                         Manage the system and perform administrative tasks.
@@ -343,7 +343,6 @@ export default function AdminPage() {
                                 {updating ? "Signing..." : "Update Merkle Root"}
                             </button>
                         </form>
-
 
                         {pendingUpdates.length > 0 && (
                             <div className="mt-8">

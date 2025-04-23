@@ -1,10 +1,15 @@
 from backend.routes import admin_bp
 from flask import jsonify, request
+from flask_socketio import emit
 from web3 import Web3
 from eth_account.messages import encode_defunct
 from eth_account import Account
 from backend.classes.issue_verification import IssuerVerification
 from backend.config import w3, issuer_registry, PRIVATE_KEY
+from backend.socketio_instance import socketio
+
+last_update = None
+
 
 
 # Store temporary signatures in memory
@@ -12,11 +17,15 @@ pending_root_updates = {}
 # Store the final result of the last successful update
 last_successful_update = None
 
+
+# List of admin addresses (lowercase for consistency)
 ADMIN_ADDRESSES = [
-    "0x9dbe33e61ca2f65118fbcaf182ac2cdd2cab4a42".lower(),  # First admin
-    "0x031A433BcB6c45Fa1afa9E33D9Ad60838b0970F7".lower()   # Second admin
-    # "0x31B39c6F5E83FC03B7dd5A98047A3C75fD1dE487".lower() #Third admin
-    
+    "0x9dbe33e61ca2f65118fbcaf182ac2cdd2cab4a42".lower(),  #First admin (Segun)
+    "0x31B39c6F5E83FC03B7dd5A98047A3C75fD1dE487".lower(),  #Second admin (Blake)
+    "0x75D2295BF57e7058bCC7a9e7bA3B8b49785011D5".lower(),  #Third admin (Ezra)
+    "0xbe84152F91de69Aa6eff487c015AF5A817fF0CC4".lower(),  #Fourth admin (Joshua)
+    "0x910Fc2afFb437c2F8eAB18945047a123fcB57967".lower(),  #Fifth admin (Nathan)
+    "0x031A433BcB6c45Fa1afa9E33D9Ad60838b0970F7".lower()   #Sixth admin (Gabe)
 ]
 
 @admin_bp.route('/get-new-root', methods=['GET'])
@@ -80,6 +89,18 @@ def update_merkle_root_multi():
                     'first_signature': signature,
                     'root_bytes': root_bytes
                 }
+
+                # Emit pending updates to all clients
+                socketio.emit('pending_updates', {
+                    'pending': [
+                        {
+                            'merkleRoot': root,
+                            'firstAdmin': data['first_admin']
+                        }
+                        for root, data in pending_root_updates.items()
+                    ]
+                })
+
                 return jsonify({
                     'success': True,
                     'message': 'First signature recorded. Waiting for second admin signature.',
@@ -128,6 +149,15 @@ def update_merkle_root_multi():
 
                 # Then clear the pending update
                 del pending_root_updates[new_root]
+
+                global last_update
+                last_update = {
+                    'merkleRoot': new_root,
+                    'transactionHash': receipt.transactionHash.hex()
+                }
+
+                # Notify clients about the update
+                socketio.emit('merkle_root_updated', last_update)
 
                 return jsonify({
                     'success': True,
@@ -191,4 +221,36 @@ def get_pending_updates():
         })
     except Exception as e:
         print(f"Error in get_pending_updates: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+    
+@admin_bp.route('/multi-sig/last-update', methods=['GET'])
+def get_last_update():
+    """Get the last updated Merkle root"""
+    try:
+        if last_update:
+            return jsonify({
+                'success': True,
+                'lastUpdate': last_update
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'No updates have been made yet'
+            }), 404
+    except Exception as e:
+        print(f"Error in get_last_update: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@admin_bp.route('/multi-sig/clear-last-update', methods=['POST'])
+def clear_last_update():
+    """Clear the stored last successful update"""
+    global last_update
+    if last_update == None:
+        return jsonify({'success': True, 'message': 'Last update already cleared'})
+    try:
+        last_update = None
+        print("Last successful update cleared by request.")
+        return jsonify({'success': True, 'message': 'Last update cleared successfully.'})
+    except Exception as e:
+        print(f"Error in clear_last_update: {str(e)}")
         return jsonify({'error': str(e)}), 500

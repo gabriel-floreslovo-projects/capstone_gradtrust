@@ -12,6 +12,7 @@ export default function SignInPage() {
   const [password, setPassword] = useState("");
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND;
 
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Signing in with", { username, password });
@@ -58,6 +59,7 @@ export default function SignInPage() {
         const errorData = await loginRes.json();
         console.log(`There was an error during login: ${errorData.error}`);
         alert(`There was an error during login: ${errorData.error}`);
+
       }
     } 
     catch (err) {

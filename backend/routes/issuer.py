@@ -14,8 +14,9 @@ def register_issuer():
     issuer_address = data.get('address')
     issuer_name = data.get('name')
     signature = data.get('signature')
+    entropy = data.get('entropy')
 
-    if not all([issuer_address, issuer_name, signature]):
+    if not all([issuer_address, issuer_name, signature, entropy]):
         return jsonify({'error': 'Missing required fields'}), 400
 
     try:
@@ -29,14 +30,14 @@ def register_issuer():
         with psycopg2.connect(CONNECTION_STRING) as conn:
             with conn.cursor() as cur:
                 cur.execute("""
-                    INSERT INTO issuers (id, name, signature) 
-                    VALUES (%s, %s, %s)
+                    INSERT INTO issuers (id, name, signature, entropy) 
+                    VALUES (%s, %s, %s, %s)
                     ON CONFLICT (id) 
                     DO UPDATE SET 
                         name = EXCLUDED.name,
                         signature = EXCLUDED.signature
                     """,
-                    (issuer_address, issuer_name, signature)
+                    (issuer_address, issuer_name, signature, entropy)
                 )
             conn.commit()
 
@@ -44,7 +45,8 @@ def register_issuer():
             'success': True,
             'address': issuer_address,
             'name': issuer_name,
-            'signature': signature
+            'signature': signature,
+            'entropy': entropy
         })
 
     except Exception as e:
@@ -57,7 +59,7 @@ def issue_credential():
         # Get request data
         credential_hash = request.form.get('credentialHash')
         holder_address = request.form.get('holderAddress')
-        issuer_address = request.form.get('issuerAddress')
+        issuer_address = request.form.get('issuerAddress').lower()
         issuer_name = request.form.get('issuerName')
         metadata = request.form.get('metaData')
 
@@ -87,12 +89,17 @@ def issue_credential():
             nonce = w3.eth.get_transaction_count(account.address)
             gas_price = w3.eth.gas_price
 
-            # Build transaction using legacy format
-            tx = credential_verification.functions.storeCredential(
+            credentialInfo = (
                 credential_bytes,
+                Web3.to_checksum_address(issuer_address),
                 Web3.to_checksum_address(holder_address),
                 w3.eth.get_block('latest').timestamp,
-                issuer_name + " " + metadata,
+                issuer_name + " " + metadata
+            )
+
+            # Build transaction using legacy format
+            tx = credential_verification.functions.storeCredential(
+                credentialInfo,
                 proof,
                 proof_data['isLeft'],
                 leaf_hash
