@@ -74,12 +74,12 @@ export default function AboutPage() {
                 >
                   Email Us
                 </a>
-                <a
+                {/* <a
                   href="#"
                   className="bg-slate-700 hover:bg-slate-600 text-white font-medium py-3 px-6 rounded-lg transition-colors text-center"
                 >
                   Schedule a Call
-                </a>
+                </a> */}
               </div>
             </div>
           </motion.section>

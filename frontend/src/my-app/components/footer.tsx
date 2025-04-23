@@ -14,7 +14,7 @@ export default function Footer() {
         {/* Section 2 & 3 (Grid Layout) */}
         <div className="grid flex-1 grid-cols-2 sm:grid-cols-2 gap-12">
           <div className="space-y-4">
-            <h3 className="text-sm font-medium">Solutions</h3>
+            {/* <h3 className="text-sm font-medium">Solutions</h3>
             <ul className="space-y-3 text-sm">
               <li>
                 <Link href="/issuer" className="text-muted-foreground transition-colors hover:text-primary">
@@ -31,7 +31,7 @@ export default function Footer() {
                   Verifier
                 </Link>
               </li>
-            </ul>
+            </ul> */}
           </div>
           <div className="space-y-4">
             <h3 className="text-sm font-medium">Company</h3>
@@ -42,9 +42,9 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/careers" className="text-muted-foreground transition-colors hover:text-primary">
+                {/* <Link href="/careers" className="text-muted-foreground transition-colors hover:text-primary">
                   Careers
-                </Link>
+                </Link> */}
               </li>
             </ul>
           </div>

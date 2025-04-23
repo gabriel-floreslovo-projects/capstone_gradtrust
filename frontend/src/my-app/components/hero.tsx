@@ -29,13 +29,13 @@ export default function Hero() {
         viewport={{ once: true }}
         className="flex flex-col sm:flex-row gap-4 mt-6"
       > */}
-      <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
+      {/* <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
         Explore Solutions
         <ArrowRight className="ml-2 h-4 w-4" />
       </Button>
       <Button variant="outline" size="lg" className="border-primary/20 hover:bg-primary/10">
         Schedule a Demo
-      </Button>
+      </Button> */}
       {/* </motion.div> */}
     </section>
   );

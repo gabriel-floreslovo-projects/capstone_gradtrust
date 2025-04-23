@@ -115,11 +115,11 @@ export default function SignInPage() {
               </div>
 
               {/* Forgot Password */}
-              <div className="text-right">
+              {/* <div className="text-right">
                 <Link href="/forgot-password" className="text-teal-400 hover:underline text-sm">
                   Forgot Password?
                 </Link>
-              </div>
+              </div> */}
 
               {/* Sign In Button */}
               <button

@@ -28,8 +28,8 @@ export default function Navbar() {
         </nav>
         <div className="flex items-center space-x-4">
           <Button variant="ghost" size="sm" className="hidden md:flex">
-            Contact
-          </Button>
+            <a href="mailto:contact@streamline.com">Contact</a>
+          </Button> 
           <Link href="/Sign_In">
             <Button size="sm">Sign In</Button>
           </Link>
